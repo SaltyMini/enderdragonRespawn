@@ -15,6 +15,10 @@ import java.util.stream.Collectors;
 
 public class DragonAbilities implements Listener {
 
+    //Guna do some config stuff here
+    private final double damageMultiplier = 1.5;
+
+
     private Plugin plugin;
     NamespacedKey key;
 
@@ -38,7 +42,7 @@ public class DragonAbilities implements Listener {
         Bukkit.getLogger().info("Event Dragon attacked " + event.getEntity().getName());
 
         // Example: Increase damage
-        event.setDamage(event.getDamage() * 1.5);
+        event.setDamage(event.getDamage() * damageMultiplier);
 
         // Example: Special effects
         event.getEntity().getLocation().getWorld().createExplosion(
