@@ -98,7 +98,7 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
         }
 
         int killedCount = 0;
-        for (Entity entity : endWorld.getEntities()) {
+        for (Entity entity : endWorld.getEntitiesByClass(EnderDragon.class)) {
             if (entity instanceof EnderDragon) {
                 EnderDragon dragon = (EnderDragon) entity;
 
