@@ -165,6 +165,8 @@ public class DragonAbilities implements Listener {
                 //TODO: give third player a reward
             }
             Bukkit.broadcastMessage("§c[Event Dragon] §fTop Damage Dealer: " + (topPlayer != null ? topPlayer.getName() : "Unknown") + " with " + sortedScores.get(topPlayer.getUniqueId()) + " damage.");
+            Bukkit.broadcastMessage("§c[Event Dragon] §fSecond Place: " + (secondPlayer != null ? secondPlayer.getName() : "Unknown") + " with " + sortedScores.get(secondPlayer.getUniqueId()) + " damage.");
+            Bukkit.broadcastMessage("§c[Event Dragon] §fThird Place: " + (thirdPlayer != null ? thirdPlayer.getName() : "Unknown") + " with " + sortedScores.get(thirdPlayer.getUniqueId()) + " damage.");
 
         } else {
             Bukkit.broadcastMessage("§c[Event Dragon] §fNo players dealt damage to the Event Dragon.");

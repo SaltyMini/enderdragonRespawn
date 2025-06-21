@@ -15,6 +15,8 @@ public class DragonMob implements Listener {
     private Plugin plugin;
     NamespacedKey key;
 
+    private final double healthMultiplier = 3.0;
+
     public DragonMob(Plugin plugin) {
         this.plugin = plugin;
         key = new NamespacedKey(plugin, "eventDragon");
@@ -32,6 +34,8 @@ public class DragonMob implements Listener {
         Location spawnLocation = new Location(world, 0, 128, 0);
 
         EnderDragon dragon = (EnderDragon) world.spawnEntity(spawnLocation, EntityType.ENDER_DRAGON);
+        dragon.setHealth(dragon.getMaxHealth() * healthMultiplier);
+
 
         dragon.getPersistentDataContainer().set(key, PersistentDataType.BOOLEAN, true);
 
