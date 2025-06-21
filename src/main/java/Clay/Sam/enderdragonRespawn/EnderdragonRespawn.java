@@ -67,10 +67,11 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
                 commandSender.sendMessage("An event dragon is already present in the End.");
                 commandSender.sendMessage("use /killEventDragon to remove it.");
                 return true;
+            } else {
+                dragonAbilities.clearPlayerDamageMap();
+                dragonMob.spawnDragon();
+                commandSender.sendMessage("Event Dragon has been spawned.");
             }
-
-            dragonMob.spawnDragon();
-            commandSender.sendMessage("Event Dragon has been spawned.");
             return true;
         } else if(command.getLabel().equalsIgnoreCase("killEventDragon")) {
 
