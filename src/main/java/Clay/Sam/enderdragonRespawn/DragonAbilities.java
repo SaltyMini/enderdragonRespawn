@@ -1,9 +1,6 @@
 package Clay.Sam.enderdragonRespawn;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -186,6 +183,7 @@ public class DragonAbilities implements Listener {
     public void respawnHealBecons() {
         for (Location loc : beaconLocations) {
             loc.getWorld().getBlockAt(loc).setType(org.bukkit.Material.BEACON);
+            loc.getWorld().getBlockAt(loc.subtract(0, 1, 0)).setType(Material.OBSIDIAN);
             Bukkit.getLogger().info("Placed beacon at " + loc.toString());
         }
     }
