@@ -1,0 +1,25 @@
+name: enderdragonRespawn
+version: '0.0.1'
+main: Clay.Sam.enderdragonRespawn.EnderdragonRespawn
+api-version: '1.21'
+author: Clay.Sam
+description: A plugin to spawn event Ender Dragons with custom NBT data
+
+
+commands:
+  spawnEventDragon:
+    description: Spawns an event Ender Dragon with custom NBT data
+    usage: /spawnEventDragon
+    permission: enderdragonrespawn.spawn
+    permission-message: You do not have permission to use this command.
+
+
+permissions:
+  enderdragonrespawn.spawn:
+    description: Allows player to spawn event dragons
+    default: op
+  enderdragonrespawn.*:
+    description: Gives access to all EnderdragonRespawn permissions
+    default: op
+    children:
+      enderdragonrespawn.spawn: true
