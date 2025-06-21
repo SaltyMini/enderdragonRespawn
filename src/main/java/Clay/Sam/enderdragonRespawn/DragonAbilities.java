@@ -1,7 +1,9 @@
 package Clay.Sam.enderdragonRespawn;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,7 +19,7 @@ public class DragonAbilities implements Listener {
 
     //Guna do some config stuff here
     private final double damageMultiplier = 1.5;
-
+    private final List<Location> beaconLocations = new ArrayList<>();
 
     private Plugin plugin;
     NamespacedKey key;
@@ -27,6 +29,8 @@ public class DragonAbilities implements Listener {
     public DragonAbilities(Plugin plugin) {
         this.plugin = plugin;
         key = new NamespacedKey(plugin, "eventDragon");
+
+        addBeaconLocations();
     }
 
     // when the dragon attacks/damages a player
@@ -179,6 +183,19 @@ public class DragonAbilities implements Listener {
         playerDamageMap.clear();
     }
 
+    public void respawnHealBecons() {
+        for (Location loc : beaconLocations) {
+            loc.getWorld().getBlockAt(loc).setType(org.bukkit.Material.BEACON);
+            Bukkit.getLogger().info("Placed beacon at " + loc.toString());
+        }
+    }
+
+    private void addBeaconLocations() {
+        //TODO: Get beacon locations from server and add them
+        World world = Bukkit.getWorld("world_the_end");
+        beaconLocations.add(new Location(world, 0, 128, 0));
+        beaconLocations.add(new Location(world, 100, 128, 100));
+    }
 
     private boolean isEventDragon(EnderDragon dragon) {
         return dragon.getPersistentDataContainer().has(key, PersistentDataType.BOOLEAN);
