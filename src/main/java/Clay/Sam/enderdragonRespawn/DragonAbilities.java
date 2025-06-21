@@ -171,9 +171,6 @@ public class DragonAbilities implements Listener {
         }
 
         playerDamageMap.clear();
-
-
-
     }
 
 
