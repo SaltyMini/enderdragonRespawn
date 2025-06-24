@@ -10,10 +10,12 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitTask;
 
 public class DragonMob implements Listener {
 
     private static Plugin plugin;
+    private static BukkitTask dragonRunnableTask;
 
 
     public DragonMob(Plugin plugin) {
@@ -42,6 +44,7 @@ public class DragonMob implements Listener {
         // Optional: Also add scoreboard tag for command compatibility
         dragon.addScoreboardTag("eventDragon");
 
+        StartDragonMobRunnable();
     }
 
     public static void killExistingEventDragons() {
@@ -70,7 +73,24 @@ public class DragonMob implements Listener {
 
     }
 
-    public class DragonMobRunnable implements Runnable {
+    public static void StartDragonMobRunnable() {
+        StopDragonMobRunnable();
+
+        DragonMobRunnable dragonMobRunnable = new DragonMobRunnable();
+        dragonRunnableTask = Bukkit.getScheduler().runTaskTimer(plugin, dragonMobRunnable, 0L, 20L); // Runs every second
+
+        Bukkit.getLogger().info("DragonMobRunnable started.");
+    }
+
+    public static void StopDragonMobRunnable() {
+        if (dragonRunnableTask != null && !dragonRunnableTask.isCancelled()) {
+            dragonRunnableTask.cancel();
+            dragonRunnableTask = null;
+            Bukkit.getLogger().info("Dragon runnable stopped!");
+        }
+    }
+
+    public static class DragonMobRunnable implements Runnable {
 
         @Override
         public void run() {

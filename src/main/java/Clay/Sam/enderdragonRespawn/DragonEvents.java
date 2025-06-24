@@ -130,6 +130,8 @@ public class DragonEvents implements Listener {
             Bukkit.broadcastMessage("§c[Event Dragon] §f" + positionText + ": " + displayName +
                     " with " + String.format("%.1f", damage) + " damage.");
         }
+
+        DragonMob.StopDragonMobRunnable();
     }
 
     /* might want to use later
