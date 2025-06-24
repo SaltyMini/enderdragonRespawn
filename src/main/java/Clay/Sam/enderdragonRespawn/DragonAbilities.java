@@ -15,14 +15,26 @@ public class DragonAbilities implements Listener {
     private final List<Location> beaconLocations = new ArrayList<>();
     private DragonDamageTrack dragonDamageTrack;
 
+    int dragonPhase; // 0 = normal, 1 = respawn, 2 = minions,
+
+    public void increaseDragonPhase() {
+        if(!(dragonPhase >= 2)) {
+            dragonPhase++;
+        }
+    }
+
+    public int getDragonPhase() {
+        return dragonPhase;
+    }
+
 
     public DragonAbilities(Plugin plugin, DragonDamageTrack dragonDamageTrack) {
         this.plugin = plugin;
         this.dragonDamageTrack = dragonDamageTrack;
         addBeaconLocations();
+        dragonPhase = 0;
+        //start schedular for custom abilities
     }
-
-
 
     public void respawnHealBeaconsAbility() {
         for (Location loc : beaconLocations) {
@@ -55,7 +67,7 @@ public class DragonAbilities implements Listener {
         }
     }
 
-    public void angryEndermen() {
+    public void angryEnderman() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             Location playerLocation = player.getLocation();
             for (Entity entity : playerLocation.getWorld().getNearbyEntities(playerLocation, 10, 10, 10)) {
@@ -67,6 +79,11 @@ public class DragonAbilities implements Listener {
             }
         }
     }
+
+
+
+
+    //Helper methods
 
     private void addBeaconLocations() {
         World world = Bukkit.getWorld("world_the_end");
@@ -81,8 +98,6 @@ public class DragonAbilities implements Listener {
         beaconLocations.add(new Location(world, -13, 86, 39));
         beaconLocations.add(new Location(world, -34, 89, 24));
     }
-
-    //Helper methods
 
     public static boolean isEventDragon(EnderDragon dragon) {
         NamespacedKey key = new NamespacedKey(plugin, "eventDragon");

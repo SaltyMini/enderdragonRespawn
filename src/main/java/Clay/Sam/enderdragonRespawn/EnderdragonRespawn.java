@@ -13,24 +13,19 @@ import org.jetbrains.annotations.NotNull;
 
 public final class EnderdragonRespawn extends JavaPlugin implements CommandExecutor {
 
-    private Plugin plugin;
-    private DragonMob dragonMob;
-    private DragonAbilities dragonAbilities;
-    private DragonDamageTrack dragonDamageTrack;
+    private static Plugin plugin;
+
 
     @Override
     public void onEnable() {
 
         this.plugin = this;
-        dragonMob = new DragonMob(this);
-        dragonAbilities = new DragonAbilities(this, dragonDamageTrack);
 
         killExistingEventDragons();
         Bukkit.getPluginManager().registerEvents(new PvpEvent(), this);
         Bukkit.getPluginManager().registerEvents(new DragonEvents(this, dragonDamageTrack), this); // ADD THIS LINE
         Bukkit.getPluginManager().registerEvents(dragonAbilities, this);
 
-        this.dragonDamageTrack = new DragonDamageTrack();
 
     }
 
@@ -39,9 +34,6 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
         // Plugin shutdown logic
     }
 
-    public DragonDamageTrack getDragonDamageTrack() {
-        return dragonDamageTrack;
-    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -124,7 +116,7 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
 
     }
 
-    public Plugin getPlugin() {
+    public static Plugin getPlugin() {
         return plugin;
     }
 

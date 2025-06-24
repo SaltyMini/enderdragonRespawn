@@ -19,6 +19,7 @@ public class DragonEvents implements Listener {
 
     private final double damageMultiplier = 1.5;
     private DragonDamageTrack dragonDamageTrack;
+    private DragonAbilities dragonAbilities;
 
 
     private Plugin plugin;
@@ -54,15 +55,23 @@ public class DragonEvents implements Listener {
     @EventHandler
     public void onPlayerDamageDragon(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof EnderDragon dragon)) return;
-
         if (!DragonAbilities.isEventDragon(dragon)) return;
-
-        if(!(event.getDamageSource().getCausingEntity() instanceof Player player)) return;
+        if (!(event.getDamageSource().getCausingEntity() instanceof Player player)) return;
 
         float damage = (float) event.getDamage();
 
         dragonDamageTrack.playerDamageDragonAdd(player.getName(), damage);
 
+        // change phase based on health, 100-60% phase 0 - 66-34 phase 1 - 33-0 phase 2
+        if (dragon.getHealth() <= dragon.getMaxHealth() * 0.66 && dragon.getHealth() > dragon.getMaxHealth() * 0.33) {
+            Bukkit.getLogger().info("Event Dragon is now in phase 1 (66-34%)");
+            dragonAbilities.increaseDragonPhase();
+
+        } else if (dragon.getHealth() <= dragon.getMaxHealth() * 0.33 && dragon.getHealth() > 0) {
+            Bukkit.getLogger().info("Event Dragon is now in phase 2 (33-0%)");
+            dragonAbilities.increaseDragonPhase();
+
+        }
     }
 
     @EventHandler
@@ -147,7 +156,6 @@ public class DragonEvents implements Listener {
      */
 
     //Increase damage done by dragon breath
-
     @EventHandler
     public void onBreathDmg(EntityDamageEvent event) {
         if(event.getCause() != EntityDamageEvent.DamageCause.DRAGON_BREATH) return;
