@@ -2,11 +2,13 @@ package Clay.Sam.enderdragonRespawn;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
@@ -55,12 +57,11 @@ public class DragonEvents implements Listener {
 
         if (!DragonAbilities.isEventDragon(dragon)) return;
 
-        if(!(event.getDamageSource().getCausingEntity() instanceof Player)) return;
+        if(!(event.getDamageSource().getCausingEntity() instanceof Player player)) return;
 
-        UUID playerUUID = event.getDamageSource().getCausingEntity().getUniqueId();
         float damage = (float) event.getDamage();
 
-
+        dragonDamageTrack.playerDamageDragonAdd(player.getName(), damage);
 
     }
 
@@ -91,32 +92,40 @@ public class DragonEvents implements Listener {
                 default -> (i + 1) + "th Place";
             };
 
-            // Give rewards based on position
+            Loot.LootItem rewardItem = null;
+
             if (player != null) {
                 switch (i) {
                     case 0 -> {
-                        // TODO: Give first place reward
-                        // Example: player.getInventory().addItem(new ItemStack(Material.DIAMOND, 10));
+                        rewardItem = Loot.pickRandomLoot(Loot.FIRST_PLACE);
+                        ItemStack item = new ItemStack(rewardItem.material(), rewardItem.amount());
+
+                        player.getInventory().addItem(item);
                     }
                     case 1 -> {
-                        // TODO: Give second place reward
-                        // Example: player.getInventory().addItem(new ItemStack(Material.GOLD_INGOT, 5));
+                        rewardItem = Loot.pickRandomLoot(Loot.SECOND_PLACE);
+                        ItemStack item = new ItemStack(rewardItem.material(), rewardItem.amount());
+
+                        player.getInventory().addItem(item);
                     }
                     case 2 -> {
-                        // TODO: Give third place reward
-                        // Example: player.getInventory().addItem(new ItemStack(Material.IRON_INGOT, 3));
+                        rewardItem = Loot.pickRandomLoot(Loot.THIRD_PLACE);
+                        ItemStack item = new ItemStack(rewardItem.material(), rewardItem.amount());
+
+                        player.getInventory().addItem(item);
                     }
                 }
             }
+
 
             // Broadcast message
             String displayName = player != null ? player.getName() : playerName;
             Bukkit.broadcastMessage("§c[Event Dragon] §f" + positionText + ": " + displayName +
                     " with " + String.format("%.1f", damage) + " damage.");
         }
-
     }
 
+    /* might want to use later
     @EventHandler
     public void onDragonProjectile(ProjectileLaunchEvent event) {
         if (!(event.getEntity().getShooter() instanceof EnderDragon)) return;
@@ -134,6 +143,17 @@ public class DragonEvents implements Listener {
             dragon.getWorld().spawn(dragon.getLocation(),
                     event.getEntity().getClass());
         }
+    }
+     */
+
+    //Increase damage done by dragon breath
+
+    @EventHandler
+    public void onBreathDmg(EntityDamageEvent event) {
+        if(event.getCause() != EntityDamageEvent.DamageCause.DRAGON_BREATH) return;
+        if (event.getEntity() instanceof Player) {
+            event.setDamage(event.getDamage() * 2);
+        };
     }
 
     @EventHandler
@@ -171,6 +191,18 @@ public class DragonEvents implements Listener {
             Bukkit.broadcastMessage("§c[Event Dragon] §fThe Event Dragon has targeted " +
                     event.getTarget().getName() + "!");
         }
+    }
+
+
+
+    //award tables
+
+    public Material[] getFirstPlaceRewards() {
+        return new Material[]{
+                Material.DIAMOND,
+                Material.NETHERITE_INGOT,
+                Material.ENCHANTED_GOLDEN_APPLE
+        };
     }
 
 }
