@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
@@ -19,7 +20,9 @@ public class DragonEvents implements Listener {
     private DragonDamageTrack dragonDamageTrack;
     private DragonAbilities dragonAbilities;
 
-    private Plugin plugin;
+    private static BukkitTask dragonRunnableTask;
+
+    private static Plugin plugin;
 
     public DragonEvents(Plugin plugin) {
 
@@ -131,7 +134,7 @@ public class DragonEvents implements Listener {
                     " with " + String.format("%.1f", damage) + " damage.");
         }
 
-        DragonMob.StopDragonMobRunnable();
+        StopDragonMobRunnable();
     }
 
     /* might want to use later
@@ -200,6 +203,44 @@ public class DragonEvents implements Listener {
                     event.getTarget().getName() + "!");
         }
     }
+
+
+
+    public static void StartDragonMobRunnable() {
+        StopDragonMobRunnable();
+
+        DragonMobRunnable dragonMobRunnable = new DragonMobRunnable();
+        dragonRunnableTask = Bukkit.getScheduler().runTaskTimer(plugin, dragonMobRunnable, 0L, 20L); // Runs every second
+
+        Bukkit.getLogger().info("DragonMobRunnable started.");
+    }
+
+    public static void StopDragonMobRunnable() {
+        if (dragonRunnableTask != null && !dragonRunnableTask.isCancelled()) {
+            dragonRunnableTask.cancel();
+            dragonRunnableTask = null;
+            Bukkit.getLogger().info("Dragon runnable stopped!");
+        }
+    }
+
+
+    //TODO: Add abilities to runnable
+    //TODO: Add instance get methods
+    public static class DragonMobRunnable implements Runnable {
+
+        @Override
+        public void run() {
+
+            Bukkit.getLogger().info("runs every second");
+            int dragonPhase = DragonAbilities.getDragonPhase();
+
+            switch (dragonPhase) {
+                case 1:
+                    ;
+                    break;
+            }
+
+        }
 
 
     //award tables

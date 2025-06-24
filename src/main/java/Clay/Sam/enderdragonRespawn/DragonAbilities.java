@@ -14,7 +14,7 @@ public class DragonAbilities {
     private final List<Location> beaconLocations = new ArrayList<>();
     private DragonDamageTrack dragonDamageTrack;
 
-    int dragonPhase; // 0 = normal, 1 = respawn, 2 = minions,
+    static int dragonPhase; // 0 = normal, 1 = respawn, 2 = minions,
 
 
     public DragonAbilities(Plugin plugin, DragonDamageTrack dragonDamageTrack) {
@@ -40,7 +40,7 @@ public class DragonAbilities {
         }
     }
 
-    public int getDragonPhase() {
+    public static int getDragonPhase() {
         return dragonPhase;
     }
 

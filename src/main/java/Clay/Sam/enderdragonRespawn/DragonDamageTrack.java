@@ -8,8 +8,6 @@ public class DragonDamageTrack {
 
     static HashMap<String, Float> playerDamageMap = new HashMap<>();
 
-
-
     public void playerDamageDragonAdd(String playerName, float damage) {
         playerDamageMap.merge(playerName, damage, Float::sum);
     }
