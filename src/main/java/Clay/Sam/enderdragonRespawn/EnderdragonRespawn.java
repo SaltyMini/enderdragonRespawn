@@ -20,7 +20,7 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
 
         this.plugin = this;
 
-        killExistingEventDragons();
+        DragonMob.killExistingEventDragons();
         Bukkit.getPluginManager().registerEvents(new PvpEvent(), this);
 
         Bukkit.getPluginManager().registerEvents(new DragonEvents(this), this);
@@ -29,7 +29,7 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
 
     @Override
     public void onDisable() {
-        killExistingEventDragons();
+        DragonMob.killExistingEventDragons();
     }
 
 
@@ -79,39 +79,12 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
                 return true;
             }
 
-            killExistingEventDragons();
+            DragonMob.killExistingEventDragons();
             commandSender.sendMessage("All existing event dragons have been removed.");
             return true;
         }
 
         return true;
-    }
-
-
-    private void killExistingEventDragons() {
-        World endWorld = Bukkit.getWorld("world_the_end");
-
-        if (endWorld == null) {
-            Bukkit.getLogger().warning("World 'world_the_end' not found during startup cleanup.");
-            return;
-        }
-
-        int killedCount = 0;
-        for (Entity entity : endWorld.getEntitiesByClass(EnderDragon.class)) {
-            if (entity instanceof EnderDragon) {
-                EnderDragon dragon = (EnderDragon) entity;
-
-                // Check if this is an event dragon using the scoreboard tag
-                if (dragon.getScoreboardTags().contains("eventDragon")) {
-                    dragon.remove();
-                    killedCount++;
-                }
-            }
-        }
-
-            DragonDamageTrack.clearPlayerDamageMap();
-            Bukkit.getLogger().info("Removed " + killedCount + " existing event dragon(s) on startup.");
-
     }
 
     public static Plugin getPlugin() {

@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
@@ -40,6 +41,32 @@ public class DragonMob implements Listener {
 
         // Optional: Also add scoreboard tag for command compatibility
         dragon.addScoreboardTag("eventDragon");
+
+    }
+
+    public static void killExistingEventDragons() {
+        World endWorld = Bukkit.getWorld("world_the_end");
+
+        if (endWorld == null) {
+            Bukkit.getLogger().warning("World 'world_the_end' not found during startup cleanup.");
+            return;
+        }
+
+        int killedCount = 0;
+        for (Entity entity : endWorld.getEntitiesByClass(EnderDragon.class)) {
+            if (entity instanceof EnderDragon) {
+                EnderDragon dragon = (EnderDragon) entity;
+
+                // Check if this is an event dragon using the scoreboard tag
+                if (dragon.getScoreboardTags().contains("eventDragon")) {
+                    dragon.remove();
+                    killedCount++;
+                }
+            }
+        }
+
+        DragonDamageTrack.clearPlayerDamageMap();
+        Bukkit.getLogger().info("Removed " + killedCount + " existing event dragon(s) on startup.");
 
     }
 
