@@ -1,29 +1,27 @@
 package Clay.Sam.enderdragonRespawn;
 
 import org.bukkit.*;
-import org.bukkit.entity.EnderDragon;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
+import org.bukkit.entity.*;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.*;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class DragonAbilities implements Listener {
 
     private static Plugin plugin;
 
     private final List<Location> beaconLocations = new ArrayList<>();
+    private DragonDamageTrack dragonDamageTrack;
 
 
-    public DragonAbilities(Plugin plugin) {
+    public DragonAbilities(Plugin plugin, DragonDamageTrack dragonDamageTrack) {
         this.plugin = plugin;
-
+        this.dragonDamageTrack = dragonDamageTrack;
         addBeaconLocations();
     }
+
 
 
     public void respawnHealBeaconsAbility() {
@@ -36,10 +34,39 @@ public class DragonAbilities implements Listener {
 
     public void spawnMinionsAbility() {
 
-        //spawn minions on top 3 players
+        int minionCount = 3; // Number of minions to spawn per player
+        int topNPlayers = 5; // Number of top players to spawn at
+
+        List<Map.Entry<String, Float>> topPlayers = dragonDamageTrack.getTopPlayers(topNPlayers);
+        for(int i = 0; i < topPlayers.size(); i++) {
+            Map.Entry<String, Float> entry = topPlayers.get(i);
+            String playerName = entry.getKey();
+
+            Player player = Bukkit.getPlayer(playerName);
+            if (player != null && player.isOnline()) {
+                Location spawnLocation = player.getLocation().add(0, 5, 0);
+                for(int j = 0; j < minionCount; j++) {
+                    EnderDragon minion = (EnderDragon) spawnLocation.getWorld().spawnEntity(spawnLocation, EntityType.ENDERMITE);
+                    minion.setCustomName("Minion of " + playerName);
+                }
+
+                Bukkit.getLogger().info("Spawned minion for " + playerName + " at " + spawnLocation.toString());
+            }
+        }
     }
 
-
+    public void angryEndermen() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Location playerLocation = player.getLocation();
+            for (Entity entity : playerLocation.getWorld().getNearbyEntities(playerLocation, 10, 10, 10)) {
+                if (entity.getType() == EntityType.ENDERMAN) {
+                    Enderman enderman = (Enderman) entity;
+                    enderman.setTarget(player);
+                    Bukkit.getLogger().info("Angered enderman at " + entity.getLocation().toString() + " towards " + player.getName());
+                }
+            }
+        }
+    }
 
     private void addBeaconLocations() {
         World world = Bukkit.getWorld("world_the_end");
