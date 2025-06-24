@@ -15,7 +15,7 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
 
     private static Plugin plugin;
 
-
+    //TODO: FIX INSTANCE HANDLING
     @Override
     public void onEnable() {
 

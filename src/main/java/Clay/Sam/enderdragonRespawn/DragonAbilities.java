@@ -11,7 +11,7 @@ import java.util.*;
 public class DragonAbilities implements Listener {
 
     private static Plugin plugin;
-
+    //TODO: FIX INSTANCE HANDLING
     private final List<Location> beaconLocations = new ArrayList<>();
     private DragonDamageTrack dragonDamageTrack;
 

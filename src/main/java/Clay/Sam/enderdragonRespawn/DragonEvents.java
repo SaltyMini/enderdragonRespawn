@@ -21,6 +21,8 @@ public class DragonEvents implements Listener {
     private DragonDamageTrack dragonDamageTrack;
     private DragonAbilities dragonAbilities;
 
+//TODO: FIX INSTANCE HANDLING
+
 
     private Plugin plugin;
 
