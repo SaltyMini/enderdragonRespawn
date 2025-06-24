@@ -15,7 +15,6 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
 
     private static Plugin plugin;
 
-    //TODO: FIX INSTANCE HANDLING
     @Override
     public void onEnable() {
 
@@ -23,8 +22,9 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
 
         killExistingEventDragons();
         Bukkit.getPluginManager().registerEvents(new PvpEvent(), this);
-        Bukkit.getPluginManager().registerEvents(new DragonEvents(this, dragonDamageTrack), this); // ADD THIS LINE
-        Bukkit.getPluginManager().registerEvents(dragonAbilities, this);
+
+        Bukkit.getPluginManager().registerEvents(new DragonEvents(this), this);
+
 
 
     }
@@ -69,8 +69,8 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
                 commandSender.sendMessage("use /killEventDragon to remove it.");
                 return true;
             } else {
-                dragonDamageTrack.clearPlayerDamageMap();
-                dragonMob.spawnDragon();
+                DragonDamageTrack.clearPlayerDamageMap();
+                DragonMob.spawnDragon();
                 commandSender.sendMessage("Event Dragon has been spawned.");
             }
             return true;
@@ -111,7 +111,7 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
             }
         }
 
-            dragonDamageTrack.clearPlayerDamageMap();
+            DragonDamageTrack.clearPlayerDamageMap();
             Bukkit.getLogger().info("Removed " + killedCount + " existing event dragon(s) on startup.");
 
     }

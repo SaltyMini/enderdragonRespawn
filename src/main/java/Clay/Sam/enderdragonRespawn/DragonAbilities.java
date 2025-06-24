@@ -8,10 +8,9 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
-public class DragonAbilities implements Listener {
+public class DragonAbilities {
 
     private static Plugin plugin;
-    //TODO: FIX INSTANCE HANDLING
     private final List<Location> beaconLocations = new ArrayList<>();
     private DragonDamageTrack dragonDamageTrack;
 
@@ -26,7 +25,6 @@ public class DragonAbilities implements Listener {
     public int getDragonPhase() {
         return dragonPhase;
     }
-
 
     public DragonAbilities(Plugin plugin, DragonDamageTrack dragonDamageTrack) {
         this.plugin = plugin;

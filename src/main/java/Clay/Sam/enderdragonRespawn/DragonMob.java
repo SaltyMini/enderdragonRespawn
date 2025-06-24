@@ -12,18 +12,17 @@ import org.bukkit.plugin.Plugin;
 
 public class DragonMob implements Listener {
 
-    private Plugin plugin;
-    NamespacedKey key;
+    private static Plugin plugin;
 
-    private final double healthMultiplier = 3.0;
 
     public DragonMob(Plugin plugin) {
         this.plugin = plugin;
-        key = new NamespacedKey(plugin, "eventDragon");
+
     }
 
-    public EnderDragon spawnDragon(   ) {
+    public static EnderDragon spawnDragon(   ) {
 
+        final double healthMultiplier = 3.0;
         World world = Bukkit.getWorld("world_the_end");
 
         if (world == null) {
@@ -36,7 +35,7 @@ public class DragonMob implements Listener {
         EnderDragon dragon = (EnderDragon) world.spawnEntity(spawnLocation, EntityType.ENDER_DRAGON);
         dragon.setHealth(dragon.getMaxHealth() * healthMultiplier);
 
-
+        NamespacedKey key = new NamespacedKey(plugin, "eventDragon");
         dragon.getPersistentDataContainer().set(key, PersistentDataType.BOOLEAN, true);
 
         // Optional: Also add scoreboard tag for command compatibility

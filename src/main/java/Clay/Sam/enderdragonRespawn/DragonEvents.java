@@ -12,8 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
 
 public class DragonEvents implements Listener {
 
@@ -21,15 +19,13 @@ public class DragonEvents implements Listener {
     private DragonDamageTrack dragonDamageTrack;
     private DragonAbilities dragonAbilities;
 
-//TODO: FIX INSTANCE HANDLING
-
-
     private Plugin plugin;
 
-    public DragonEvents(Plugin plugin, DragonDamageTrack dragonDamageTrack) {
+    public DragonEvents(Plugin plugin) {
 
         this.plugin = plugin;
-        this.dragonDamageTrack = dragonDamageTrack;
+        this.dragonDamageTrack = new DragonDamageTrack();
+        this.dragonAbilities = new DragonAbilities(plugin, dragonDamageTrack);
 
     }
 

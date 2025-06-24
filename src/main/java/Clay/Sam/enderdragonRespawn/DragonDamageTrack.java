@@ -6,18 +6,15 @@ import java.util.*;
 
 public class DragonDamageTrack {
 
-    HashMap<String, Float> playerDamageMap = new HashMap<>();
-
-    public DragonDamageTrack() {
+    static HashMap<String, Float> playerDamageMap = new HashMap<>();
 
 
-    }
 
     public void playerDamageDragonAdd(String playerName, float damage) {
         playerDamageMap.merge(playerName, damage, Float::sum);
     }
 
-    public void clearPlayerDamageMap() {
+    public static void clearPlayerDamageMap() {
         playerDamageMap.clear();
     }
 
