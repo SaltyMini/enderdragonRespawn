@@ -200,7 +200,6 @@ public class DragonEvents implements Listener {
     }
 
 
-
     //award tables
 
     public Material[] getFirstPlaceRewards() {

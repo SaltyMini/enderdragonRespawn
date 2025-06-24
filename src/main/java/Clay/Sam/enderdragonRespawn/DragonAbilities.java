@@ -16,15 +16,6 @@ public class DragonAbilities {
 
     int dragonPhase; // 0 = normal, 1 = respawn, 2 = minions,
 
-    public void increaseDragonPhase() {
-        if(!(dragonPhase >= 2)) {
-            dragonPhase++;
-        }
-    }
-
-    public int getDragonPhase() {
-        return dragonPhase;
-    }
 
     public DragonAbilities(Plugin plugin, DragonDamageTrack dragonDamageTrack) {
         this.plugin = plugin;
@@ -34,12 +25,23 @@ public class DragonAbilities {
         //start schedular for custom abilities
     }
 
+
     public void respawnHealBeaconsAbility() {
         for (Location loc : beaconLocations) {
             loc.getWorld().getBlockAt(loc).setType(org.bukkit.Material.BEACON);
             loc.getWorld().getBlockAt(loc.subtract(0, 1, 0)).setType(Material.BEDROCK);
             Bukkit.getLogger().info("Placed beacon at " + loc.toString());
         }
+    }
+
+    public void increaseDragonPhase() {
+        if(!(dragonPhase >= 2)) {
+            dragonPhase++;
+        }
+    }
+
+    public int getDragonPhase() {
+        return dragonPhase;
     }
 
     public void spawnMinionsAbility() {
@@ -77,8 +79,6 @@ public class DragonAbilities {
             }
         }
     }
-
-
 
 
     //Helper methods

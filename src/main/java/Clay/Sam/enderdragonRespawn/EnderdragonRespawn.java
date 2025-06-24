@@ -25,13 +25,11 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
 
         Bukkit.getPluginManager().registerEvents(new DragonEvents(this), this);
 
-
-
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        killExistingEventDragons();
     }
 
 

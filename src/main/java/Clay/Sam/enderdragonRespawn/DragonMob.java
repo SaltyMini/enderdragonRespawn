@@ -20,14 +20,14 @@ public class DragonMob implements Listener {
 
     }
 
-    public static EnderDragon spawnDragon(   ) {
+    public static void spawnDragon(   ) {
 
         final double healthMultiplier = 3.0;
         World world = Bukkit.getWorld("world_the_end");
 
         if (world == null) {
             Bukkit.getLogger().warning("World 'world_the_end' not found.");
-            return null; // World not found
+            return; // World not found
         }
 
         Location spawnLocation = new Location(world, 0, 128, 0);
@@ -41,7 +41,17 @@ public class DragonMob implements Listener {
         // Optional: Also add scoreboard tag for command compatibility
         dragon.addScoreboardTag("eventDragon");
 
-        return dragon;
+    }
+
+    public class DragonMobRunnable implements Runnable {
+
+        @Override
+        public void run() {
+
+            Bukkit.getLogger().info("runs every second");
+
+        }
+
     }
 
 
