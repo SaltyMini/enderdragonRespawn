@@ -18,9 +18,8 @@ public class DragonEvents implements Listener {
 
     static DragonEvents instance = null;
 
-    private final double damageMultiplier = 1.5;
-    private DragonDamageTrack dragonDamageTrack;
-    private DragonAbilities dragonAbilities;
+    private final DragonDamageTrack dragonDamageTrack;
+    private final DragonAbilities dragonAbilities;
 
     private static BukkitTask dragonRunnableTask;
 
@@ -45,15 +44,15 @@ public class DragonEvents implements Listener {
     @EventHandler
     public void onDragonDamagePlayer(EntityDamageByEntityEvent event) {
 
-        if (!(event.getDamager() instanceof EnderDragon)) return;
+        if (!(event.getDamager() instanceof EnderDragon dragon)) return;
 
-        EnderDragon dragon = (EnderDragon) event.getDamager();
         if (!DragonAbilities.isEventDragon(dragon)) return;
 
         // Your custom code when event dragon attacks
         Bukkit.getLogger().info("Event Dragon attacked " + event.getEntity().getName());
 
         // Example: Increase damage
+        double damageMultiplier = 1.5;
         event.setDamage(event.getDamage() * damageMultiplier);
 
         // Example: Special effects
@@ -87,9 +86,8 @@ public class DragonEvents implements Listener {
 
     @EventHandler
     public void onDragonDeath(EntityDeathEvent event) {
-        if (!(event.getEntity() instanceof EnderDragon)) return;
+        if (!(event.getEntity() instanceof EnderDragon dragon)) return;
 
-        EnderDragon dragon = (EnderDragon) event.getEntity();
         if (!DragonAbilities.isEventDragon(dragon)) return;
 
         Bukkit.broadcastMessage("§6[Event Dragon] §fThe mighty Event Dragon has been slain!");
@@ -200,9 +198,8 @@ public class DragonEvents implements Listener {
 
     @EventHandler
     public void onDragonTarget(EntityTargetEvent event) {
-        if (!(event.getEntity() instanceof EnderDragon)) return;
+        if (!(event.getEntity() instanceof EnderDragon dragon)) return;
 
-        EnderDragon dragon = (EnderDragon) event.getEntity();
         if (!DragonAbilities.isEventDragon(dragon)) return;
 
         Bukkit.getLogger().info("Event Dragon is targeting " +
@@ -241,17 +238,34 @@ public class DragonEvents implements Listener {
         @Override
         public void run() {
 
-            Bukkit.getLogger().info("runs every second");
             int dragonPhase = DragonAbilities.getDragonPhase();
+            int abilityRate = 200 / dragonPhase; // this is kinda weird but should average out to what I want
 
-            switch (dragonPhase) {
-                case 1:
-                    ;
-                    break;
+            Random random = new Random();
+
+            // 1 over abilityRate chance to run an ability
+            if(random.nextInt(abilityRate) == 0) {
+
+                int ability = random.nextInt(3);
+
+                switch (ability) {
+                    case 0 -> {
+                        Bukkit.getLogger().info("Event Dragon is using respawn heal beacons ability!");
+                        DragonAbilities.getInstance().respawnHealBeaconsAbility();
+                    }
+                    case 1 -> {
+                        Bukkit.getLogger().info("Event Dragon is using spawn minions ability!");
+                        DragonAbilities.getInstance().spawnMinionsAbility();
+                    }
+                    case 2 -> {
+                        Bukkit.getLogger().info("Event Dragon is using angry endermen ability!");
+                        DragonAbilities.getInstance().angryEnderman();
+                    }
+                }
+
             }
 
         }
-
 
         //award tables
 

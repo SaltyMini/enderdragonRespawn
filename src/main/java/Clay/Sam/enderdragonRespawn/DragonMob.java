@@ -44,7 +44,7 @@ public class DragonMob implements Listener {
         // Optional: Also add scoreboard tag for command compatibility
         dragon.addScoreboardTag("eventDragon");
 
-        StartDragonMobRunnable();
+        DragonEvents.StartDragonMobRunnable();
     }
 
     public static void killExistingEventDragons() {

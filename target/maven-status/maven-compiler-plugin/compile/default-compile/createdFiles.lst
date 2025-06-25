@@ -1,0 +1,9 @@
+Clay\Sam\enderdragonRespawn\PvpEvent.class
+Clay\Sam\enderdragonRespawn\DragonDamageTrack.class
+Clay\Sam\enderdragonRespawn\DragonEvents.class
+Clay\Sam\enderdragonRespawn\DragonMob.class
+Clay\Sam\enderdragonRespawn\Loot.class
+Clay\Sam\enderdragonRespawn\Loot$LootItem.class
+Clay\Sam\enderdragonRespawn\DragonAbilities.class
+Clay\Sam\enderdragonRespawn\DragonEvents$DragonMobRunnable.class
+Clay\Sam\enderdragonRespawn\EnderdragonRespawn.class
