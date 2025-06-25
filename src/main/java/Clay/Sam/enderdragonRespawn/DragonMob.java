@@ -16,9 +16,17 @@ import java.util.Objects;
 public class DragonMob implements Listener {
 
     private static Plugin plugin;
+    public static DragonMob instance = null;
 
     public DragonMob() {
         plugin = EnderdragonRespawn.getPlugin();
+    }
+
+    public static DragonMob getInstance() {
+        if (instance == null) {
+            return new DragonMob();
+        }
+        return instance;
     }
 
     public static void spawnDragon(   ) {

@@ -1,5 +1,5 @@
 name: enderdragonRespawn
-version: '0.0.1'
+version: '1.1'
 main: Clay.Sam.enderdragonRespawn.EnderdragonRespawn
 api-version: '1.21'
 author: Clay.Sam
@@ -12,14 +12,17 @@ commands:
     usage: /spawnEventDragon
     permission: enderdragonrespawn.spawn
     permission-message: You do not have permission to use this command.
+  killEventDragon:
+    description: Kills all existing event dragons
+    usage: /killEventDragon
+    permission: enderdragonrespawn.kill
+
 
 
 permissions:
   enderdragonrespawn.spawn:
     description: Allows player to spawn event dragons
     default: op
-  enderdragonrespawn.*:
-    description: Gives access to all EnderdragonRespawn permissions
+  enderdragonrespawn.kill:
+    description: Kill the event dragon
     default: op
-    children:
-      enderdragonrespawn.spawn: true
