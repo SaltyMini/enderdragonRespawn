@@ -1,9 +1,8 @@
 package Clay.Sam.enderdragonRespawn;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.damage.DamageType;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,9 +25,9 @@ public class DragonEvents implements Listener {
 
     private static Plugin plugin;
 
-    public DragonEvents(Plugin plugin) {
+    public DragonEvents() {
 
-        this.plugin = plugin;
+        plugin = EnderdragonRespawn.getPlugin();
         this.dragonDamageTrack = DragonDamageTrack.getInstance();
         this.dragonAbilities = DragonAbilities.getInstance();
 
@@ -36,7 +35,7 @@ public class DragonEvents implements Listener {
 
     public static DragonEvents getInstance() {
         if(instance == null) {
-            instance = new DragonEvents(EnderdragonRespawn.getPlugin());
+            instance = new DragonEvents();
         }
         return instance;
     }
@@ -47,10 +46,10 @@ public class DragonEvents implements Listener {
 
         if (!(event.getDamager() instanceof EnderDragon dragon)) return;
 
-        if (!DragonAbilities.isEventDragon(dragon)) return;
+        if (DragonAbilities.isEventDragon(dragon)) return;
 
         // Your custom code when event dragon attacks
-        Bukkit.getLogger().info("Event Dragon attacked " + event.getEntity().getName());
+        plugin.getLogger().info("Event Dragon attacked " + event.getEntity().getName());
 
         // Example: Increase damage
         double damageMultiplier = 1.5;
@@ -66,7 +65,7 @@ public class DragonEvents implements Listener {
     @EventHandler
     public void onPlayerDamageDragon(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof EnderDragon dragon)) return;
-        if (!DragonAbilities.isEventDragon(dragon)) return;
+        if (DragonAbilities.isEventDragon(dragon)) return;
         if (!(event.getDamager() instanceof Player player)) return;
 
         float damage = (float) event.getDamage();
@@ -74,14 +73,14 @@ public class DragonEvents implements Listener {
         dragonDamageTrack.playerDamageDragonAdd(player.getName(), damage);
 
         // change phase based on health, 100-60% phase 0 - 66-34 phase 1 - 33-0 phase 2
-        if (dragon.getHealth() <= dragon.getMaxHealth() * 0.66 && dragon.getHealth() > dragon.getMaxHealth() * 0.33) {
+        if (dragon.getHealth() <= dragon.getHealth() * 0.66 && dragon.getHealth() > dragon.getHealth() * 0.33) {
             if(dragonAbilities.getDragonPhase() == 2) return; // already in phase 2
-            Bukkit.getLogger().info("Event Dragon is now in phase 1 (66-34%)");
+            plugin.getLogger().info("Event Dragon is now in phase 1 (66-34%)");
             dragonAbilities.increaseDragonPhase();
 
-        } else if (dragon.getHealth() <= dragon.getMaxHealth() * 0.33 && dragon.getHealth() > 0) {
+        } else if (dragon.getHealth() <= dragon.getHealth() * 0.33 && dragon.getHealth() > 0) {
             if(dragonAbilities.getDragonPhase() == 3) return; // already in phase 3
-            Bukkit.getLogger().info("Event Dragon is now in phase 2 (33-0%)");
+            plugin.getLogger().info("Event Dragon is now in phase 2 (33-0%)");
             dragonAbilities.increaseDragonPhase();
 
         }
@@ -91,9 +90,11 @@ public class DragonEvents implements Listener {
     public void onDragonDeath(EntityDeathEvent event) {
         if (!(event.getEntity() instanceof EnderDragon dragon)) return;
 
-        if (!DragonAbilities.isEventDragon(dragon)) return;
+        if (DragonAbilities.isEventDragon(dragon)) return;
 
-        Bukkit.broadcastMessage("§6[Event Dragon] §fThe mighty Event Dragon has been slain!");
+        Bukkit.broadcast(Component.text("[Event Dragon] The mighty Event Dragon has been slain!")
+                .color(NamedTextColor.GOLD));
+
 
         dragon.getWorld().createExplosion(dragon.getLocation(), 5.0f, false, false);
 
@@ -105,15 +106,9 @@ public class DragonEvents implements Listener {
             Float damage = entry.getValue();
             Player player = Bukkit.getPlayer(playerName);
 
-            // Determine position text
-            String positionText = switch (i) {
-                case 0 -> "Top Damage Dealer";
-                case 1 -> "Second Place";
-                case 2 -> "Third Place";
-                default -> (i + 1) + "th Place";
-            };
+            String positionText = getPositionText(i); //method below
 
-            Loot.LootItem rewardItem = null;
+            Loot.LootItem rewardItem;
 
             if (player != null) {
                 switch (i) {
@@ -139,10 +134,17 @@ public class DragonEvents implements Listener {
             }
 
 
+
+
+
             // Broadcast message
             String displayName = player != null ? player.getName() : playerName;
-            Bukkit.broadcastMessage("§c[Event Dragon] §f" + positionText + ": " + displayName +
-                    " with " + String.format("%.1f", damage) + " damage.");
+            Bukkit.broadcast(Component.text()
+                    .append(Component.text("[Event Dragon] ").color(NamedTextColor.RED))
+                    .append(Component.text(positionText + ": " + displayName + " with " +
+                            String.format("%.1f", damage) + " damage.").color(NamedTextColor.WHITE))
+                    .build());
+
         }
 
         StopDragonMobRunnable();
@@ -169,20 +171,29 @@ public class DragonEvents implements Listener {
     }
      */
 
+    private String getPositionText(int position) {
+        return switch (position) {
+            case 0 -> "Top Damage Dealer";
+            case 1 -> "Second Place";
+            case 2 -> "Third Place";
+            default -> (position + 1) + "th Place";
+        };
+    }
+
     //Increase damage done by dragon breath
     @EventHandler
     public void onBreathDmg(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof EnderDragon dragon)) return;
-        if (!DragonAbilities.isEventDragon(dragon)) return;
+        if (DragonAbilities.isEventDragon(dragon)) return;
         if (event.getEntity() instanceof Player) {
             event.setDamage(event.getDamage() * 2);
-        };
+        }
     }
 
     @EventHandler
     public void onDragonPhaseChange(EnderDragonChangePhaseEvent event) {
         EnderDragon dragon = event.getEntity();
-        if (!DragonAbilities.isEventDragon(dragon)) return;
+        if (DragonAbilities.isEventDragon(dragon)) return;
 
         EnderDragon.Phase newPhase = event.getNewPhase();
         EnderDragon.Phase currentPhase = event.getCurrentPhase();
@@ -190,12 +201,11 @@ public class DragonEvents implements Listener {
         // Check for perching phases
         if (newPhase == EnderDragon.Phase.LAND_ON_PORTAL) {
             // Dragon is about to perch or is perching
-            Bukkit.getLogger().info("Event Dragon is perching!");
-            Bukkit.broadcastMessage("§canceling dragon perch");
+            plugin.getLogger().info("Event Dragon is perching!");
             event.setCancelled(true);
         }
 
-        Bukkit.getLogger().info("Event Dragon phase changed from " +
+        plugin.getLogger().info("Event Dragon phase changed from " +
                 (currentPhase != null ? currentPhase.name() : "null") +
                 " to " + newPhase.name());
     }
@@ -204,14 +214,18 @@ public class DragonEvents implements Listener {
     public void onDragonTarget(EntityTargetEvent event) {
         if (!(event.getEntity() instanceof EnderDragon dragon)) return;
 
-        if (!DragonAbilities.isEventDragon(dragon)) return;
+        if (DragonAbilities.isEventDragon(dragon)) return;
 
-        Bukkit.getLogger().info("Event Dragon is targeting " +
+        plugin.getLogger().info("Event Dragon is targeting " +
                 (event.getTarget() != null ? event.getTarget().getName() : "no one"));
 
         if (event.getTarget() != null) {
-            Bukkit.broadcastMessage("§c[Event Dragon] §fThe Event Dragon has targeted " +
-                    event.getTarget().getName() + "!");
+            Bukkit.broadcast(Component.text()
+                    .append(Component.text("[Event Dragon] ").color(NamedTextColor.RED))
+                    .append(Component.text("The Event Dragon has targeted " +
+                            event.getTarget().getName() + "!").color(NamedTextColor.WHITE))
+                    .build());
+
         }
     }
 
@@ -223,23 +237,24 @@ public class DragonEvents implements Listener {
         DragonMobRunnable dragonMobRunnable = new DragonMobRunnable();
         dragonRunnableTask = Bukkit.getScheduler().runTaskTimer(plugin, dragonMobRunnable, 0L, 20L);
     
-        Bukkit.getLogger().info("DragonMobRunnable started.");
+        plugin.getLogger().info("DragonMobRunnable started.");
     }
 
     public static synchronized void StopDragonMobRunnable() {
         if (dragonRunnableTask != null && !dragonRunnableTask.isCancelled()) {
             dragonRunnableTask.cancel();
             dragonRunnableTask = null;
-            Bukkit.getLogger().info("Dragon runnable stopped!");
+            plugin.getLogger().info("Dragon runnable stopped!");
         }
     }
     
     public static class DragonMobRunnable implements Runnable {
 
+
         @Override
         public void run() {
 
-            int dragonPhase = DragonAbilities.getDragonPhase();
+            int dragonPhase = DragonAbilities.getInstance().getDragonPhase();
             int abilityRate = Math.max(1, dragonPhase) * 50;
 
             Random random = new Random();
@@ -251,15 +266,15 @@ public class DragonEvents implements Listener {
 
                 switch (ability) {
                     case 0 -> {
-                        Bukkit.getLogger().info("Event Dragon is using respawn heal beacons ability!");
+                        plugin.getLogger().info("Event Dragon is using respawn heal beacons ability!");
                         DragonAbilities.getInstance().respawnHealBeaconsAbility();
                     }
                     case 1 -> {
-                        Bukkit.getLogger().info("Event Dragon is using spawn minions ability!");
+                        plugin.getLogger().info("Event Dragon is using spawn minions ability!");
                         DragonAbilities.getInstance().spawnMinionsAbility();
                     }
                     case 2 -> {
-                        Bukkit.getLogger().info("Event Dragon is using angry endermen ability!");
+                        plugin.getLogger().info("Event Dragon is using angry endermen ability!");
                         DragonAbilities.getInstance().angryEnderman();
                     }
                 }

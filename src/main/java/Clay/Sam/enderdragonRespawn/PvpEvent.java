@@ -10,12 +10,13 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 public class PvpEvent implements Listener {
 
     @EventHandler
-    public void onPvP(EntityDamageByEntityEvent
-                                  event) {
+    public void onPvP(EntityDamageByEntityEvent event) {
 
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
-            if (player.getWorld().getName().equalsIgnoreCase("world_the_end")) {
+        if (!(event.getDamager() instanceof Player)) return;
+        if (!(event.getEntity() instanceof Player player)) return;
+
+
+        if (player.getWorld().getName().equalsIgnoreCase("world_the_end")) {
                 Location playerLoc = player.getLocation();
                 if (Math.abs(playerLoc.getX()) < 100 && Math.abs(playerLoc.getZ()) < 100) {
                     event.setCancelled(true);
@@ -23,7 +24,7 @@ public class PvpEvent implements Listener {
                 }
             }
 
-        }
+
 
     }
 }

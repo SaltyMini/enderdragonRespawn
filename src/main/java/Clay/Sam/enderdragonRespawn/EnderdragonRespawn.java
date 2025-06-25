@@ -6,10 +6,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EnderDragon;
-import org.bukkit.entity.Entity;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public final class EnderdragonRespawn extends JavaPlugin implements CommandExecutor {
 
@@ -18,10 +19,10 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
     @Override
     public void onEnable() {
 
-        this.plugin = this;
+        plugin = this;
 
-        this.getCommand("spawnEventDragon").setExecutor(this);
-        this.getCommand("killEventDragon").setExecutor(this);
+        Objects.requireNonNull(this.getCommand("spawnEventDragon")).setExecutor(this);
+        Objects.requireNonNull(this.getCommand("killEventDragon")).setExecutor(this);
 
 
         DragonMob.killExistingEventDragons();
@@ -38,7 +39,7 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
 
 
     @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
 
         if(command.getLabel().equalsIgnoreCase("spawnEventDragon")) {
 
@@ -50,7 +51,7 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
             World endWorld = Bukkit.getWorld("world_the_end");
 
             if (endWorld == null) {
-                Bukkit.getLogger().warning("World 'world_the_end' not found during startup cleanup.");
+                plugin.getLogger().warning("World 'world_the_end' not found during startup cleanup.");
                 return true;
             }
 

@@ -5,12 +5,13 @@ import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.EnderDragon;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.attribute.Attribute;
+
+import java.util.Objects;
 
 public class DragonMob implements Listener {
 
@@ -18,9 +19,8 @@ public class DragonMob implements Listener {
 
 
 
-    public DragonMob(Plugin plugin) {
-        this.plugin = plugin;
-
+    public DragonMob() {
+        plugin = EnderdragonRespawn.getPlugin();
     }
 
     public static void spawnDragon(   ) {
@@ -29,15 +29,17 @@ public class DragonMob implements Listener {
         World world = Bukkit.getWorld("world_the_end");
 
         if (world == null) {
-            Bukkit.getLogger().warning("World 'world_the_end' not found.");
+            plugin.getLogger().warning("World 'world_the_end' not found.");
             return; // World not found
         }
 
         Location spawnLocation = new Location(world, 0, 128, 0);
 
         EnderDragon dragon = (EnderDragon) world.spawnEntity(spawnLocation, EntityType.ENDER_DRAGON);
-        dragon.setMaxHealth(dragon.getMaxHealth() * healthMultiplier);
-        dragon.setHealth(dragon.getMaxHealth());
+        Objects.requireNonNull(dragon.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(200 * healthMultiplier);
+        dragon.setHealth(200 * healthMultiplier);
+
+
 
         NamespacedKey key = new NamespacedKey(plugin, "eventDragon");
         dragon.getPersistentDataContainer().set(key, PersistentDataType.BOOLEAN, true);
@@ -52,22 +54,21 @@ public class DragonMob implements Listener {
         World endWorld = Bukkit.getWorld("world_the_end");
 
         if (endWorld == null) {
-            Bukkit.getLogger().warning("World 'world_the_end' not found during startup cleanup.");
+            plugin.getLogger().warning("World 'world_the_end' not found during startup cleanup.");
             return;
         }
 
         int killedCount = 0;
-        for (Entity entity : endWorld.getEntitiesByClass(EnderDragon.class)) {
-                EnderDragon dragon = (EnderDragon) entity;
-                // Check if this is an event dragon using the scoreboard tag
-                if (dragon.getScoreboardTags().contains("eventDragon")) {
-                    dragon.remove();
+        for (EnderDragon entity : endWorld.getEntitiesByClass(EnderDragon.class)) {
+            // Check if this is an event dragon using the scoreboard tag
+                if (entity.getScoreboardTags().contains("eventDragon")) {
+                    entity.remove();
                     killedCount++;
                 }
         }
 
         DragonDamageTrack.clearPlayerDamageMap();
-        Bukkit.getLogger().info("Removed " + killedCount + " existing event dragon(s) on startup.");
+        plugin.getLogger().info("Removed " + killedCount + " existing event dragon(s) on startup.");
 
     }
 

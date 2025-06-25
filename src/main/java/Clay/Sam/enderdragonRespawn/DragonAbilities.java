@@ -1,8 +1,8 @@
 package Clay.Sam.enderdragonRespawn;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.entity.*;
-import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 
@@ -12,16 +12,16 @@ public class DragonAbilities {
 
     private static Plugin plugin;
     private final List<Location> beaconLocations = new ArrayList<>();
-    private DragonDamageTrack dragonDamageTrack;
+    private final DragonDamageTrack dragonDamageTrack;
 
     static DragonAbilities instance = null;
 
-    static int dragonPhase; // 1 - 3
+    int dragonPhase; // 1 - 3
 
 
-    public DragonAbilities(Plugin plugin, DragonDamageTrack dragonDamageTrack) {
-        this.plugin = plugin;
-        this.dragonDamageTrack = dragonDamageTrack;
+    public DragonAbilities() {
+        plugin = EnderdragonRespawn.getPlugin();
+        dragonDamageTrack = DragonDamageTrack.getInstance();
         addBeaconLocations();
         dragonPhase = 1;
         //start schedular for custom abilities
@@ -29,7 +29,7 @@ public class DragonAbilities {
 
     public static DragonAbilities getInstance() {
         if(instance == null) {
-            instance = new DragonAbilities(EnderdragonRespawn.getPlugin(), DragonDamageTrack.getInstance());
+            instance = new DragonAbilities();
         }
         return instance;
     }
@@ -38,7 +38,7 @@ public class DragonAbilities {
         for (Location loc : beaconLocations) {
             loc.getWorld().getBlockAt(loc).setType(org.bukkit.Material.BEACON);
             loc.getWorld().getBlockAt(loc.clone().subtract(0, 1, 0)).setType(Material.BEDROCK);
-            Bukkit.getLogger().info("Placed beacon at " + loc.toString());
+            plugin.getLogger().info("Placed beacon at " + loc);
         }
     }
 
@@ -48,7 +48,7 @@ public class DragonAbilities {
         }
     }
 
-    public static int getDragonPhase() {
+    public int getDragonPhase() {
         return dragonPhase;
     }
 
@@ -58,19 +58,18 @@ public class DragonAbilities {
         int topNPlayers = 5; // Number of top players to spawn at
 
         List<Map.Entry<String, Float>> topPlayers = dragonDamageTrack.getTopPlayers(topNPlayers);
-        for(int i = 0; i < topPlayers.size(); i++) {
-            Map.Entry<String, Float> entry = topPlayers.get(i);
+        for (Map.Entry<String, Float> entry : topPlayers) {
             String playerName = entry.getKey();
 
             Player player = Bukkit.getPlayer(playerName);
             if (player != null && player.isOnline()) {
-                Location spawnLocation = player.getLocation().add(0, 5, 0);
-                for(int j = 0; j < minionCount; j++) {
+                Location spawnLocation = player.getLocation().clone().add(0, 5, 0);
+                for (int j = 0; j < minionCount; j++) {
                     Endermite minion = (Endermite) spawnLocation.getWorld().spawnEntity(spawnLocation, EntityType.ENDERMITE);
-                    minion.setCustomName("Minion of " + playerName);
+                    minion.customName(Component.text("Minion of " + playerName));
                 }
 
-                Bukkit.getLogger().info("Spawned minion for " + playerName + " at " + spawnLocation.toString());
+                plugin.getLogger().info("Spawned minion for " + playerName + " at " + spawnLocation);
             }
         }
     }
@@ -82,7 +81,7 @@ public class DragonAbilities {
                 if (entity.getType() == EntityType.ENDERMAN) {
                     Enderman enderman = (Enderman) entity;
                     enderman.setTarget(player);
-                    Bukkit.getLogger().info("Angered enderman at " + entity.getLocation().toString() + " towards " + player.getName());
+                    plugin.getLogger().info("Angered enderman at " + entity.getLocation() + " towards " + player.getName());
                 }
             }
         }
@@ -107,7 +106,7 @@ public class DragonAbilities {
 
     public static boolean isEventDragon(EnderDragon dragon) {
         NamespacedKey key = new NamespacedKey(plugin, "eventDragon");
-        return dragon.getPersistentDataContainer().has(key, PersistentDataType.BOOLEAN);
+        return !dragon.getPersistentDataContainer().has(key, PersistentDataType.BOOLEAN);
     }
 
 

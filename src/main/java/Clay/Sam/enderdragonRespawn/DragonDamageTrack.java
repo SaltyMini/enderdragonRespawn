@@ -1,14 +1,13 @@
 package Clay.Sam.enderdragonRespawn;
 
-import org.bukkit.Location;
-
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DragonDamageTrack {
 
     static DragonDamageTrack instance = null;
 
-    static HashMap<String, Float> playerDamageMap = new HashMap<>();
+    static ConcurrentHashMap<String, Float> playerDamageMap = new ConcurrentHashMap<>();
 
     public static DragonDamageTrack getInstance() {
         if (instance == null) {
