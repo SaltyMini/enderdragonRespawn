@@ -25,6 +25,10 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
         Objects.requireNonNull(this.getCommand("killEventDragon")).setExecutor(this);
 
         DragonMob.getInstance();
+        DragonAbilities.getInstance();
+        DragonDamageTrack.getInstance();
+
+
         DragonMob.killExistingEventDragons();
         Bukkit.getPluginManager().registerEvents(new PvpEvent(), this);
 

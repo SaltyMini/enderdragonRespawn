@@ -3,6 +3,7 @@ package Clay.Sam.enderdragonRespawn;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Player;
@@ -203,6 +204,14 @@ public class DragonEvents implements Listener {
             // Dragon is about to perch or is perching
             plugin.getLogger().info("Event Dragon is perching!");
             event.setCancelled(true);
+            dragon.setPhase(EnderDragon.Phase.SEARCH_FOR_BREATH_ATTACK_TARGET);
+        }
+
+        if (newPhase == EnderDragon.Phase.FLY_TO_PORTAL) {
+            // Dragon is about to perch or is perching
+            plugin.getLogger().info("Event Dragon is perching!");
+            event.setCancelled(true);
+            dragon.setPhase(EnderDragon.Phase.CHARGE_PLAYER);
         }
 
         plugin.getLogger().info("Event Dragon phase changed from " +
@@ -254,10 +263,36 @@ public class DragonEvents implements Listener {
         @Override
         public void run() {
 
+
+            World endWorld = Bukkit.getWorld("world_the_end");
+            if (endWorld == null) return;
+
+
             int dragonPhase = DragonAbilities.getInstance().getDragonPhase();
             int abilityRate = Math.max(1, dragonPhase) * 50;
 
             Random random = new Random();
+
+            EnderDragon eventDragon = null;
+            for (EnderDragon dragon : endWorld.getEntitiesByClass(EnderDragon.class)) {
+                if (DragonMob.isEventDragon(dragon)) {
+                    eventDragon = dragon;
+                    break;
+                }
+            }
+            if (eventDragon == null) return;
+
+
+            if (eventDragon.getTarget() == null) {
+                for (Player player : endWorld.getPlayers()) {
+                    double distance = player.getLocation().distance(eventDragon.getLocation());
+                    if (distance < 128) { // Within 128 blocks
+                        eventDragon.setTarget(player);
+                        break;
+                    }
+                }
+            }
+
 
             // 1 over abilityRate chance to run an ability
             if(random.nextInt(abilityRate) == 0) {

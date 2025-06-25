@@ -65,6 +65,7 @@ public class DragonAbilities {
             String playerName = entry.getKey();
 
             Player player = Bukkit.getPlayer(playerName);
+            if(player.getWorld() != Bukkit.getWorld("world_the_end") ) continue;
             if (player != null && player.isOnline()) {
                 Location spawnLocation = player.getLocation().clone().add(0, 5, 0);
                 for (int j = 0; j < minionCount; j++) {
@@ -79,6 +80,7 @@ public class DragonAbilities {
 
     public void angryEnderman() {
         for (Player player : Bukkit.getOnlinePlayers()) {
+            if(player.getWorld() != Bukkit.getWorld("world_the_end") ) continue;
             Location playerLocation = player.getLocation();
             for (Entity entity : playerLocation.getWorld().getNearbyEntities(playerLocation, 10, 10, 10)) {
                 if (entity.getType() == EntityType.ENDERMAN) {

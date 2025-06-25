@@ -51,8 +51,13 @@ public class DragonMob implements Listener {
         NamespacedKey key = new NamespacedKey(plugin, "eventDragon");
         dragon.getPersistentDataContainer().set(key, PersistentDataType.BOOLEAN, true);
 
-        DragonAbilities.getInstance().resetDragonPhase();
+        dragon.setCustomName("§c§lEvent Dragon");
+        dragon.setCustomNameVisible(true);
 
+
+        DragonAbilities.getInstance().resetDragonPhase();
+        dragon.setAI(true);
+        dragon.setPhase(EnderDragon.Phase.CIRCLING);
 
         DragonEvents.StartDragonMobRunnable();
     }
