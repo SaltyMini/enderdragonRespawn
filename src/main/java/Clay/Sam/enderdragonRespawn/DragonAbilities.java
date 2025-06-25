@@ -43,13 +43,17 @@ public class DragonAbilities {
     }
 
     public void increaseDragonPhase() {
-        if(!(dragonPhase < 3)) {
+        if(dragonPhase < 3) {
             dragonPhase++;
         }
     }
 
     public int getDragonPhase() {
         return dragonPhase;
+    }
+
+    public void resetDragonPhase() {
+        dragonPhase = 1;
     }
 
     public void spawnMinionsAbility() {
@@ -104,10 +108,7 @@ public class DragonAbilities {
         beaconLocations.add(new Location(world, -34, 89, 24));
     }
 
-    public static boolean isEventDragon(EnderDragon dragon) {
-        NamespacedKey key = new NamespacedKey(plugin, "eventDragon");
-        return !dragon.getPersistentDataContainer().has(key, PersistentDataType.BOOLEAN);
-    }
+
 
 
 }

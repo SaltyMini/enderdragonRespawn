@@ -17,8 +17,6 @@ public class DragonMob implements Listener {
 
     private static Plugin plugin;
 
-
-
     public DragonMob() {
         plugin = EnderdragonRespawn.getPlugin();
     }
@@ -44,8 +42,8 @@ public class DragonMob implements Listener {
         NamespacedKey key = new NamespacedKey(plugin, "eventDragon");
         dragon.getPersistentDataContainer().set(key, PersistentDataType.BOOLEAN, true);
 
-        // Optional: Also add scoreboard tag for command compatibility
-        dragon.addScoreboardTag("eventDragon");
+        DragonAbilities.getInstance().resetDragonPhase();
+
 
         DragonEvents.StartDragonMobRunnable();
     }
@@ -61,7 +59,7 @@ public class DragonMob implements Listener {
         int killedCount = 0;
         for (EnderDragon entity : endWorld.getEntitiesByClass(EnderDragon.class)) {
             // Check if this is an event dragon using the scoreboard tag
-                if (entity.getScoreboardTags().contains("eventDragon")) {
+                if (DragonMob.isEventDragon(entity)) {
                     entity.remove();
                     killedCount++;
                 }
@@ -70,6 +68,11 @@ public class DragonMob implements Listener {
         DragonDamageTrack.clearPlayerDamageMap();
         plugin.getLogger().info("Removed " + killedCount + " existing event dragon(s) on startup.");
 
+    }
+
+    public static boolean isEventDragon(EnderDragon dragon) {
+        NamespacedKey key = new NamespacedKey(plugin, "eventDragon");
+        return dragon.getPersistentDataContainer().has(key, PersistentDataType.BOOLEAN);
     }
 
 }

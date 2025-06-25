@@ -46,7 +46,7 @@ public class DragonEvents implements Listener {
 
         if (!(event.getDamager() instanceof EnderDragon dragon)) return;
 
-        if (DragonAbilities.isEventDragon(dragon)) return;
+        if (DragonMob.isEventDragon(dragon)) return;
 
         // Your custom code when event dragon attacks
         plugin.getLogger().info("Event Dragon attacked " + event.getEntity().getName());
@@ -65,32 +65,37 @@ public class DragonEvents implements Listener {
     @EventHandler
     public void onPlayerDamageDragon(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof EnderDragon dragon)) return;
-        if (DragonAbilities.isEventDragon(dragon)) return;
+        if (!(DragonMob.isEventDragon(dragon))) return;
         if (!(event.getDamager() instanceof Player player)) return;
 
         float damage = (float) event.getDamage();
 
         dragonDamageTrack.playerDamageDragonAdd(player.getName(), damage);
 
-        // change phase based on health, 100-60% phase 0 - 66-34 phase 1 - 33-0 phase 2
-        if (dragon.getHealth() <= dragon.getHealth() * 0.66 && dragon.getHealth() > dragon.getHealth() * 0.33) {
-            if(dragonAbilities.getDragonPhase() == 2) return; // already in phase 2
-            plugin.getLogger().info("Event Dragon is now in phase 1 (66-34%)");
-            dragonAbilities.increaseDragonPhase();
+        updateDragonPhase(dragon);
 
-        } else if (dragon.getHealth() <= dragon.getHealth() * 0.33 && dragon.getHealth() > 0) {
-            if(dragonAbilities.getDragonPhase() == 3) return; // already in phase 3
-            plugin.getLogger().info("Event Dragon is now in phase 2 (33-0%)");
-            dragonAbilities.increaseDragonPhase();
+    }
 
+    private void updateDragonPhase(EnderDragon dragon) {
+        if(dragon.getHealth() == 0) return; // No need to update phase if dragon is dead
+        double healthPercentage = (dragon.getHealth() / dragon.getMaxHealth()) * 100;
+        int currentPhase = dragonAbilities.getDragonPhase();
+
+        if (healthPercentage <= 66 && healthPercentage > 33 && currentPhase == 1) {
+            plugin.getLogger().info("Event Dragon entering phase 2 at " + String.format("%.1f", healthPercentage) + "% health");
+            dragonAbilities.increaseDragonPhase();
+        } else if (healthPercentage <= 33 && currentPhase == 2) {
+            plugin.getLogger().info("Event Dragon entering phase 3 at " + String.format("%.1f", healthPercentage) + "% health");
+            dragonAbilities.increaseDragonPhase();
         }
     }
+
 
     @EventHandler
     public void onDragonDeath(EntityDeathEvent event) {
         if (!(event.getEntity() instanceof EnderDragon dragon)) return;
 
-        if (DragonAbilities.isEventDragon(dragon)) return;
+        if (DragonMob.isEventDragon(dragon)) return;
 
         Bukkit.broadcast(Component.text("[Event Dragon] The mighty Event Dragon has been slain!")
                 .color(NamedTextColor.GOLD));
@@ -128,14 +133,11 @@ public class DragonEvents implements Listener {
                         rewardItem = Loot.pickRandomLoot(Loot.THIRD_PLACE);
                         ItemStack item = new ItemStack(rewardItem.material(), rewardItem.amount());
 
+                        if(player.getInventory().)
                         player.getInventory().addItem(item);
                     }
                 }
             }
-
-
-
-
 
             // Broadcast message
             String displayName = player != null ? player.getName() : playerName;
@@ -184,7 +186,7 @@ public class DragonEvents implements Listener {
     @EventHandler
     public void onBreathDmg(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof EnderDragon dragon)) return;
-        if (DragonAbilities.isEventDragon(dragon)) return;
+        if (!(DragonMob.isEventDragon(dragon))) return;
         if (event.getEntity() instanceof Player) {
             event.setDamage(event.getDamage() * 2);
         }
@@ -193,7 +195,7 @@ public class DragonEvents implements Listener {
     @EventHandler
     public void onDragonPhaseChange(EnderDragonChangePhaseEvent event) {
         EnderDragon dragon = event.getEntity();
-        if (DragonAbilities.isEventDragon(dragon)) return;
+        if (!(DragonMob.isEventDragon(dragon))) return;
 
         EnderDragon.Phase newPhase = event.getNewPhase();
         EnderDragon.Phase currentPhase = event.getCurrentPhase();
@@ -214,7 +216,7 @@ public class DragonEvents implements Listener {
     public void onDragonTarget(EntityTargetEvent event) {
         if (!(event.getEntity() instanceof EnderDragon dragon)) return;
 
-        if (DragonAbilities.isEventDragon(dragon)) return;
+        if (!(DragonMob.isEventDragon(dragon))) return;
 
         plugin.getLogger().info("Event Dragon is targeting " +
                 (event.getTarget() != null ? event.getTarget().getName() : "no one"));

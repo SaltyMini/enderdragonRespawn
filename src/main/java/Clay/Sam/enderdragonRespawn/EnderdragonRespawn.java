@@ -34,6 +34,7 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
 
     @Override
     public void onDisable() {
+        DragonEvents.StopDragonMobRunnable();
         DragonMob.killExistingEventDragons();
     }
 
@@ -57,7 +58,7 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
 
             int dragonCount = 0;
             for (EnderDragon dragon : endWorld.getEntitiesByClass(EnderDragon.class)) {
-                if (dragon.getScoreboardTags().contains("eventDragon")) {
+                if (DragonMob.isEventDragon(dragon)) {
                     dragonCount++;
                 }
             }
