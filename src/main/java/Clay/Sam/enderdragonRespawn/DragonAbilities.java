@@ -14,6 +14,8 @@ public class DragonAbilities {
     private final List<Location> beaconLocations = new ArrayList<>();
     private DragonDamageTrack dragonDamageTrack;
 
+    static DragonAbilities instance = null;
+
     static int dragonPhase; // 0 = normal, 1 = respawn, 2 = minions,
 
 
@@ -25,6 +27,12 @@ public class DragonAbilities {
         //start schedular for custom abilities
     }
 
+    static DragonAbilities getInstance() {
+        if(instance == null) {
+            instance = new DragonAbilities(plugin, DragonDamageTrack.getInstance());
+        }
+        return instance;
+    }
 
     public void respawnHealBeaconsAbility() {
         for (Location loc : beaconLocations) {

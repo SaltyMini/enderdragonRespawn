@@ -16,6 +16,8 @@ import java.util.*;
 
 public class DragonEvents implements Listener {
 
+    static DragonEvents instance = null;
+
     private final double damageMultiplier = 1.5;
     private DragonDamageTrack dragonDamageTrack;
     private DragonAbilities dragonAbilities;
@@ -27,10 +29,18 @@ public class DragonEvents implements Listener {
     public DragonEvents(Plugin plugin) {
 
         this.plugin = plugin;
-        this.dragonDamageTrack = new DragonDamageTrack();
-        this.dragonAbilities = new DragonAbilities(plugin, dragonDamageTrack);
+        this.dragonDamageTrack = DragonDamageTrack.getInstance();
+        this.dragonAbilities = DragonAbilities.getInstance();
 
     }
+
+    public static DragonEvents getInstance() {
+        if(instance == null) {
+            instance = new DragonEvents(plugin);
+        }
+        return instance;
+    }
+
 
     @EventHandler
     public void onDragonDamagePlayer(EntityDamageByEntityEvent event) {
@@ -243,14 +253,14 @@ public class DragonEvents implements Listener {
         }
 
 
-    //award tables
+        //award tables
 
-    public Material[] getFirstPlaceRewards() {
-        return new Material[]{
-                Material.DIAMOND,
-                Material.NETHERITE_INGOT,
-                Material.ENCHANTED_GOLDEN_APPLE
-        };
+        public Material[] getFirstPlaceRewards() {
+            return new Material[]{
+                    Material.DIAMOND,
+                    Material.NETHERITE_INGOT,
+                    Material.ENCHANTED_GOLDEN_APPLE
+            };
+        }
     }
-
 }

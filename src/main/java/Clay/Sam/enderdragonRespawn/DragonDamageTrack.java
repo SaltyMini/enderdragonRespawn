@@ -6,7 +6,16 @@ import java.util.*;
 
 public class DragonDamageTrack {
 
+    static DragonDamageTrack instance = null;
+
     static HashMap<String, Float> playerDamageMap = new HashMap<>();
+
+    public static DragonDamageTrack getInstance() {
+        if (instance == null) {
+            instance = new DragonDamageTrack();
+        }
+        return instance;
+    }
 
     public void playerDamageDragonAdd(String playerName, float damage) {
         playerDamageMap.merge(playerName, damage, Float::sum);
