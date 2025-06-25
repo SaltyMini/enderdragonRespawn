@@ -16,20 +16,20 @@ public class DragonAbilities {
 
     static DragonAbilities instance = null;
 
-    static int dragonPhase; // 0 = normal, 1 = respawn, 2 = minions,
+    static int dragonPhase; // 1 - 3
 
 
     public DragonAbilities(Plugin plugin, DragonDamageTrack dragonDamageTrack) {
         this.plugin = plugin;
         this.dragonDamageTrack = dragonDamageTrack;
         addBeaconLocations();
-        dragonPhase = 0;
+        dragonPhase = 1;
         //start schedular for custom abilities
     }
 
-    static DragonAbilities getInstance() {
+    public static DragonAbilities getInstance() {
         if(instance == null) {
-            instance = new DragonAbilities(plugin, DragonDamageTrack.getInstance());
+            instance = new DragonAbilities(EnderdragonRespawn.getPlugin(), DragonDamageTrack.getInstance());
         }
         return instance;
     }
@@ -37,13 +37,13 @@ public class DragonAbilities {
     public void respawnHealBeaconsAbility() {
         for (Location loc : beaconLocations) {
             loc.getWorld().getBlockAt(loc).setType(org.bukkit.Material.BEACON);
-            loc.getWorld().getBlockAt(loc.subtract(0, 1, 0)).setType(Material.BEDROCK);
+            loc.getWorld().getBlockAt(loc.clone().subtract(0, 1, 0)).setType(Material.BEDROCK);
             Bukkit.getLogger().info("Placed beacon at " + loc.toString());
         }
     }
 
     public void increaseDragonPhase() {
-        if(!(dragonPhase >= 2)) {
+        if(!(dragonPhase < 3)) {
             dragonPhase++;
         }
     }
@@ -66,7 +66,7 @@ public class DragonAbilities {
             if (player != null && player.isOnline()) {
                 Location spawnLocation = player.getLocation().add(0, 5, 0);
                 for(int j = 0; j < minionCount; j++) {
-                    EnderDragon minion = (EnderDragon) spawnLocation.getWorld().spawnEntity(spawnLocation, EntityType.ENDERMITE);
+                    Endermite minion = (Endermite) spawnLocation.getWorld().spawnEntity(spawnLocation, EntityType.ENDERMITE);
                     minion.setCustomName("Minion of " + playerName);
                 }
 

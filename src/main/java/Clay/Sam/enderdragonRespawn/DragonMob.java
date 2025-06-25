@@ -36,7 +36,8 @@ public class DragonMob implements Listener {
         Location spawnLocation = new Location(world, 0, 128, 0);
 
         EnderDragon dragon = (EnderDragon) world.spawnEntity(spawnLocation, EntityType.ENDER_DRAGON);
-        dragon.setHealth(dragon.getMaxHealth() * healthMultiplier);
+        dragon.setMaxHealth(dragon.getMaxHealth() * healthMultiplier);
+        dragon.setHealth(dragon.getMaxHealth());
 
         NamespacedKey key = new NamespacedKey(plugin, "eventDragon");
         dragon.getPersistentDataContainer().set(key, PersistentDataType.BOOLEAN, true);
@@ -57,15 +58,12 @@ public class DragonMob implements Listener {
 
         int killedCount = 0;
         for (Entity entity : endWorld.getEntitiesByClass(EnderDragon.class)) {
-            if (entity instanceof EnderDragon) {
                 EnderDragon dragon = (EnderDragon) entity;
-
                 // Check if this is an event dragon using the scoreboard tag
                 if (dragon.getScoreboardTags().contains("eventDragon")) {
                     dragon.remove();
                     killedCount++;
                 }
-            }
         }
 
         DragonDamageTrack.clearPlayerDamageMap();

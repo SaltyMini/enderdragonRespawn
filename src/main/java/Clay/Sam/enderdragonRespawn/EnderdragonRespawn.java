@@ -20,6 +20,10 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
 
         this.plugin = this;
 
+        this.getCommand("spawnEventDragon").setExecutor(this);
+        this.getCommand("killEventDragon").setExecutor(this);
+
+
         DragonMob.killExistingEventDragons();
         Bukkit.getPluginManager().registerEvents(new PvpEvent(), this);
 
@@ -51,14 +55,9 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
             }
 
             int dragonCount = 0;
-            for (Entity entity : endWorld.getEntities()) {
-                if (entity instanceof EnderDragon) {
-                    EnderDragon dragon = (EnderDragon) entity;
-
-                    // Check if this is an event dragon using the scoreboard tag
-                    if (dragon.getScoreboardTags().contains("eventDragon")) {
-                        dragonCount++;
-                    }
+            for (EnderDragon dragon : endWorld.getEntitiesByClass(EnderDragon.class)) {
+                if (dragon.getScoreboardTags().contains("eventDragon")) {
+                    dragonCount++;
                 }
             }
 

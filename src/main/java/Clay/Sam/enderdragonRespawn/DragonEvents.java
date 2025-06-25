@@ -3,6 +3,7 @@ package Clay.Sam.enderdragonRespawn;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,7 +36,7 @@ public class DragonEvents implements Listener {
 
     public static DragonEvents getInstance() {
         if(instance == null) {
-            instance = new DragonEvents(plugin);
+            instance = new DragonEvents(EnderdragonRespawn.getPlugin());
         }
         return instance;
     }
@@ -66,7 +67,7 @@ public class DragonEvents implements Listener {
     public void onPlayerDamageDragon(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof EnderDragon dragon)) return;
         if (!DragonAbilities.isEventDragon(dragon)) return;
-        if (!(event.getDamageSource().getCausingEntity() instanceof Player player)) return;
+        if (!(event.getDamager() instanceof Player player)) return;
 
         float damage = (float) event.getDamage();
 
@@ -74,10 +75,12 @@ public class DragonEvents implements Listener {
 
         // change phase based on health, 100-60% phase 0 - 66-34 phase 1 - 33-0 phase 2
         if (dragon.getHealth() <= dragon.getMaxHealth() * 0.66 && dragon.getHealth() > dragon.getMaxHealth() * 0.33) {
+            if(dragonAbilities.getDragonPhase() == 2) return; // already in phase 2
             Bukkit.getLogger().info("Event Dragon is now in phase 1 (66-34%)");
             dragonAbilities.increaseDragonPhase();
 
         } else if (dragon.getHealth() <= dragon.getMaxHealth() * 0.33 && dragon.getHealth() > 0) {
+            if(dragonAbilities.getDragonPhase() == 3) return; // already in phase 3
             Bukkit.getLogger().info("Event Dragon is now in phase 2 (33-0%)");
             dragonAbilities.increaseDragonPhase();
 
@@ -169,7 +172,8 @@ public class DragonEvents implements Listener {
     //Increase damage done by dragon breath
     @EventHandler
     public void onBreathDmg(EntityDamageEvent event) {
-        if(event.getCause() != EntityDamageEvent.DamageCause.DRAGON_BREATH) return;
+        if (!(event.getEntity() instanceof EnderDragon dragon)) return;
+        if (!DragonAbilities.isEventDragon(dragon)) return;
         if (event.getEntity() instanceof Player) {
             event.setDamage(event.getDamage() * 2);
         };
@@ -213,33 +217,30 @@ public class DragonEvents implements Listener {
 
 
 
-    public static void StartDragonMobRunnable() {
+    public static synchronized void StartDragonMobRunnable() {
         StopDragonMobRunnable();
-
+    
         DragonMobRunnable dragonMobRunnable = new DragonMobRunnable();
-        dragonRunnableTask = Bukkit.getScheduler().runTaskTimer(plugin, dragonMobRunnable, 0L, 20L); // Runs every second
-
+        dragonRunnableTask = Bukkit.getScheduler().runTaskTimer(plugin, dragonMobRunnable, 0L, 20L);
+    
         Bukkit.getLogger().info("DragonMobRunnable started.");
     }
 
-    public static void StopDragonMobRunnable() {
+    public static synchronized void StopDragonMobRunnable() {
         if (dragonRunnableTask != null && !dragonRunnableTask.isCancelled()) {
             dragonRunnableTask.cancel();
             dragonRunnableTask = null;
             Bukkit.getLogger().info("Dragon runnable stopped!");
         }
     }
-
-
-    //TODO: Add abilities to runnable
-    //TODO: Add instance get methods
+    
     public static class DragonMobRunnable implements Runnable {
 
         @Override
         public void run() {
 
             int dragonPhase = DragonAbilities.getDragonPhase();
-            int abilityRate = 200 / dragonPhase; // this is kinda weird but should average out to what I want
+            int abilityRate = Math.max(1, dragonPhase) * 50;
 
             Random random = new Random();
 
@@ -265,16 +266,6 @@ public class DragonEvents implements Listener {
 
             }
 
-        }
-
-        //award tables
-
-        public Material[] getFirstPlaceRewards() {
-            return new Material[]{
-                    Material.DIAMOND,
-                    Material.NETHERITE_INGOT,
-                    Material.ENCHANTED_GOLDEN_APPLE
-            };
         }
     }
 }
