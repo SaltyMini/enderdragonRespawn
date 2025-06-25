@@ -3,7 +3,6 @@ package Clay.Sam.enderdragonRespawn;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.entity.*;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
@@ -27,7 +26,7 @@ public class DragonAbilities {
         //start schedular for custom abilities
     }
 
-    public static DragonAbilities getInstance() {
+    public static synchronized DragonAbilities getInstance() {
         if(instance == null) {
             instance = new DragonAbilities();
         }
@@ -96,6 +95,11 @@ public class DragonAbilities {
 
     private void addBeaconLocations() {
         World world = Bukkit.getWorld("world_the_end");
+        if (world == null) {
+            plugin.getLogger().warning("End world not found for beacon locations");
+            return;
+        }
+
         beaconLocations.add(new Location(world, -42, 92, -1));
         beaconLocations.add(new Location(world, -34, 83, -25));
         beaconLocations.add(new Location(world, -13, 104, -40));

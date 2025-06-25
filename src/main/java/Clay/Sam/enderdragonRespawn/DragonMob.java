@@ -34,6 +34,7 @@ public class DragonMob implements Listener {
         Location spawnLocation = new Location(world, 0, 128, 0);
 
         EnderDragon dragon = (EnderDragon) world.spawnEntity(spawnLocation, EntityType.ENDER_DRAGON);
+        if (dragon.getAttribute(Attribute.MAX_HEALTH) == null) return;
         Objects.requireNonNull(dragon.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(200 * healthMultiplier);
         dragon.setHealth(200 * healthMultiplier);
 

@@ -3,6 +3,7 @@ package Clay.Sam.enderdragonRespawn;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -46,7 +47,7 @@ public class DragonEvents implements Listener {
 
         if (!(event.getDamager() instanceof EnderDragon dragon)) return;
 
-        if (DragonMob.isEventDragon(dragon)) return;
+        if (!(DragonMob.isEventDragon(dragon))) return;
 
         // Your custom code when event dragon attacks
         plugin.getLogger().info("Event Dragon attacked " + event.getEntity().getName());
@@ -64,9 +65,9 @@ public class DragonEvents implements Listener {
     //Player damages dragon
     @EventHandler
     public void onPlayerDamageDragon(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof EnderDragon dragon)) return;
-        if (!(DragonMob.isEventDragon(dragon))) return;
-        if (!(event.getDamager() instanceof Player player)) return;
+        if(!(event.getEntity() instanceof EnderDragon dragon)) return;
+        if(!(DragonMob.isEventDragon(dragon))) return;
+        if(!(event.getDamager() instanceof Player player)) return;
 
         float damage = (float) event.getDamage();
 
@@ -78,7 +79,8 @@ public class DragonEvents implements Listener {
 
     private void updateDragonPhase(EnderDragon dragon) {
         if(dragon.getHealth() == 0) return; // No need to update phase if dragon is dead
-        double healthPercentage = (dragon.getHealth() / dragon.getMaxHealth()) * 100;
+        if(dragon.getAttribute(Attribute.MAX_HEALTH) == null) return;
+        double healthPercentage = (dragon.getHealth() / (Objects.requireNonNull(dragon.getAttribute(Attribute.MAX_HEALTH)).getBaseValue())) * 100;
         int currentPhase = dragonAbilities.getDragonPhase();
 
         if (healthPercentage <= 66 && healthPercentage > 33 && currentPhase == 1) {
@@ -95,7 +97,7 @@ public class DragonEvents implements Listener {
     public void onDragonDeath(EntityDeathEvent event) {
         if (!(event.getEntity() instanceof EnderDragon dragon)) return;
 
-        if (DragonMob.isEventDragon(dragon)) return;
+        if (!(DragonMob.isEventDragon(dragon))) return;
 
         Bukkit.broadcast(Component.text("[Event Dragon] The mighty Event Dragon has been slain!")
                 .color(NamedTextColor.GOLD));
@@ -113,30 +115,26 @@ public class DragonEvents implements Listener {
 
             String positionText = getPositionText(i); //method below
 
-            Loot.LootItem rewardItem;
+            Loot.LootItem rewardItem = null;
 
             if (player != null) {
                 switch (i) {
-                    case 0 -> {
-                        rewardItem = Loot.pickRandomLoot(Loot.FIRST_PLACE);
-                        ItemStack item = new ItemStack(rewardItem.material(), rewardItem.amount());
-
-                        player.getInventory().addItem(item);
-                    }
-                    case 1 -> {
-                        rewardItem = Loot.pickRandomLoot(Loot.SECOND_PLACE);
-                        ItemStack item = new ItemStack(rewardItem.material(), rewardItem.amount());
-
-                        player.getInventory().addItem(item);
-                    }
-                    case 2 -> {
-                        rewardItem = Loot.pickRandomLoot(Loot.THIRD_PLACE);
-                        ItemStack item = new ItemStack(rewardItem.material(), rewardItem.amount());
-
-                        if(player.getInventory().)
-                        player.getInventory().addItem(item);
-                    }
+                    case 0 -> rewardItem = Loot.pickRandomLoot(Loot.FIRST_PLACE);
+                    case 1 -> rewardItem = Loot.pickRandomLoot(Loot.SECOND_PLACE);
+                    case 2 -> rewardItem = Loot.pickRandomLoot(Loot.THIRD_PLACE);
                 }
+                    if(rewardItem == null) {
+                        plugin.getLogger().warning("No reward item found for player: " + playerName);
+                        continue; // Skip if no reward item is found
+                    }
+
+                    ItemStack item = new ItemStack(rewardItem.material(), rewardItem.amount());
+
+                    if(player.getInventory().firstEmpty() == -1) {
+                        player.getWorld().dropItemNaturally(player.getLocation(), item);
+                    } else {
+                        player.getInventory().addItem(item);
+                    }
             }
 
             // Broadcast message
