@@ -24,8 +24,9 @@ public class DragonEvents implements Listener {
     private final DragonAbilities dragonAbilities;
 
     private static BukkitTask dragonRunnableTask;
-
     private static Plugin plugin;
+
+
 
     public DragonEvents() {
 
@@ -256,12 +257,55 @@ public class DragonEvents implements Listener {
             plugin.getLogger().info("Dragon runnable stopped!");
         }
     }
-    
+
+    //TODO: Change to every 10 seconds
     public static class DragonMobRunnable implements Runnable {
 
+        World world;
+        Random random;
+        private List<Runnable> abilitiesQueue = new ArrayList<>();
+
+        public DragonMobRunnable() {
+            world = Bukkit.getWorld("world_the_end");
+            if (world == null) {
+                plugin.getLogger().warning("World 'world_the_end' not found during DragonMobRunnable initialization.");
+            }
+
+            if(random == null) {
+                random = new Random();
+            }
+        }
+
+        public boolean shouldEventHappen(int percentage, Random random) {
+            return random.nextInt(100) < percentage;
+        }
 
         @Override
         public void run() {
+            //
+            // Queue abilities
+            //
+            if(abilitiesQueue.size() < 5) {
+                int dragonPhase = DragonAbilities.getInstance().getDragonPhase();
+
+                // Convert phase to percentage
+                int chancePercentage = dragonPhase * 25;
+
+                if (!(shouldEventHappen(chancePercentage, random))) {
+                    return;
+                }
+
+                int rand = random.nextInt(DragonAbilities.getInstance().getAbilities().length);
+
+                abilitiesQueue.add(DragonAbilities.getInstance().getAbilities()[rand]);
+            }
+            
+
+        }
+
+
+        //@Override
+        public void run1() {
 
             //TODO: Change this
             //

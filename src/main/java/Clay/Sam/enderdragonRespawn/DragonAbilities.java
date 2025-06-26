@@ -13,6 +13,7 @@ public class DragonAbilities {
     private final List<Location> beaconLocations = new ArrayList<>();
     private final DragonDamageTrack dragonDamageTrack;
 
+
     static DragonAbilities instance = null;
 
     public DragonAbilities() {
@@ -32,12 +33,14 @@ public class DragonAbilities {
 
     //TODO: USED in DragonEvents to get abilities for the dragon
     //TODO: Add abilities for basic dragon things, make sure to include target getting
-    public static List<Runnable> getAbilities() {
-        List<Runnable> abilities = new ArrayList<>();
-        abilities.add(DragonAbilities.getInstance()::spawnMinionsAbility);
-        abilities.add(DragonAbilities.getInstance()::respawnHealBeaconsAbility);
-        abilities.add(DragonAbilities.getInstance()::angryEnderman);
-        return abilities;
+    private static final Runnable[] abilities = {
+            DragonAbilities.getInstance()::spawnMinionsAbility,
+            DragonAbilities.getInstance()::respawnHealBeaconsAbility,
+            DragonAbilities.getInstance()::angryEnderman
+    };
+
+    public Runnable[] getAbilities() {
+        return abilities; // Direct array access
     }
 
 
