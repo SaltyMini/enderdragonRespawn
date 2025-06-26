@@ -15,9 +15,6 @@ public class DragonAbilities {
 
     static DragonAbilities instance = null;
 
-    int dragonPhase; // 1 - 3
-
-
     public DragonAbilities() {
         plugin = EnderdragonRespawn.getPlugin();
         dragonDamageTrack = DragonDamageTrack.getInstance();
@@ -33,14 +30,22 @@ public class DragonAbilities {
         return instance;
     }
 
-    public void respawnHealBeaconsAbility() {
-        for (Location loc : beaconLocations) {
-            loc.getWorld().getBlockAt(loc).setType(org.bukkit.Material.BEACON);
-            loc.getWorld().getBlockAt(loc.clone().subtract(0, 1, 0)).setType(Material.BEDROCK);
-            plugin.getLogger().info("Placed beacon at " + loc);
-        }
+
+    public static List<Runnable> getAbilities() {
+        List<Runnable> abilities = new ArrayList<>();
+        abilities.add(DragonAbilities.getInstance()::spawnMinionsAbility);
+        abilities.add(DragonAbilities.getInstance()::respawnHealBeaconsAbility);
+        abilities.add(DragonAbilities.getInstance()::angryEnderman);
+        return abilities;
     }
 
+
+    //
+     // Dragon Phase
+    //
+
+
+    int dragonPhase; // 1 - 3
     public void increaseDragonPhase() {
         if(dragonPhase < 3) {
             dragonPhase++;
@@ -54,6 +59,12 @@ public class DragonAbilities {
     public void resetDragonPhase() {
         dragonPhase = 1;
     }
+
+
+    //
+     // Abilities
+    //
+
 
     public void spawnMinionsAbility() {
 
@@ -75,6 +86,14 @@ public class DragonAbilities {
 
                 plugin.getLogger().info("Spawned minion for " + playerName + " at " + spawnLocation);
             }
+        }
+    }
+
+    public void respawnHealBeaconsAbility() {
+        for (Location loc : beaconLocations) {
+            loc.getWorld().getBlockAt(loc).setType(org.bukkit.Material.BEACON);
+            loc.getWorld().getBlockAt(loc.clone().subtract(0, 1, 0)).setType(Material.BEDROCK);
+            plugin.getLogger().info("Placed beacon at " + loc);
         }
     }
 

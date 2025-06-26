@@ -267,7 +267,6 @@ public class DragonEvents implements Listener {
             World endWorld = Bukkit.getWorld("world_the_end");
             if (endWorld == null) return;
 
-
             int dragonPhase = DragonAbilities.getInstance().getDragonPhase();
             int abilityRate = Math.max(1, dragonPhase) * 50;
 
@@ -297,7 +296,7 @@ public class DragonEvents implements Listener {
             // 1 over abilityRate chance to run an ability
             if(random.nextInt(abilityRate) == 0) {
 
-                int ability = random.nextInt(3);
+                int ability = random.nextInt(6);
 
                 switch (ability) {
                     case 0 -> {
@@ -311,6 +310,23 @@ public class DragonEvents implements Listener {
                     case 2 -> {
                         plugin.getLogger().info("Event Dragon is using angry endermen ability!");
                         DragonAbilities.getInstance().angryEnderman();
+                    }
+                    case 3 -> {
+                        plugin.getLogger().info("Event Dragon is set to charge player");
+                        eventDragon.setPhase(EnderDragon.Phase.CHARGE_PLAYER);
+                    }
+                    case 4 -> {
+                        plugin.getLogger().info("Event Dragon is set to circling phase");
+                        eventDragon.setPhase(EnderDragon.Phase.BREATH_ATTACK);
+                    }
+                    case 5 -> {
+                        plugin.getLogger().info("Event Dragon is set to circling phase");
+                        eventDragon.setPhase(EnderDragon.Phase.ROAR_BEFORE_ATTACK);
+                    }
+                    default -> {
+                        plugin.getLogger().warning("Dragon circling");
+                        eventDragon.setPhase(EnderDragon.Phase.CIRCLING);
+
                     }
                 }
 
