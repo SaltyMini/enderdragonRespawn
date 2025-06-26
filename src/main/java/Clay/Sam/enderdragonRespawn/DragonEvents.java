@@ -271,7 +271,7 @@ public class DragonEvents implements Listener {
                 plugin.getLogger().warning("World 'world_the_end' not found during DragonMobRunnable initialization.");
             }
 
-            if(random == null) {
+            if (random == null) {
                 random = new Random();
             }
         }
@@ -299,89 +299,22 @@ public class DragonEvents implements Listener {
 
                 abilitiesQueue.add(DragonAbilities.getInstance().getAbilities()[rand]);
             }
-            
 
-        }
+            // run abilties
 
+            try {
 
-        //@Override
-        public void run1() {
+                Runnable ability = abilitiesQueue.get(0);
+                ability.run();
+                abilitiesQueue.remove(0);
 
-            //TODO: Change this
-            //
-             // so plan is, make this run every 10 seconds, pick a random ability and add it to an array
-            // then run the abilities in the array, and clear the array after running them
-            // if ability is running skip it, dont let the list get over 5 items
-
-
-            World endWorld = Bukkit.getWorld("world_the_end");
-            if (endWorld == null) return;
-
-            int dragonPhase = DragonAbilities.getInstance().getDragonPhase();
-            int abilityRate = Math.max(1, dragonPhase) * 50;
-
-            Random random = new Random();
-
-            EnderDragon eventDragon = null;
-            for (EnderDragon dragon : endWorld.getEntitiesByClass(EnderDragon.class)) {
-                if (DragonMob.isEventDragon(dragon)) {
-                    eventDragon = dragon;
-                    break;
-                }
-            }
-            if (eventDragon == null) return;
-
-
-            if (eventDragon.getTarget() == null) {
-                for (Player player : endWorld.getPlayers()) {
-                    double distance = player.getLocation().distance(eventDragon.getLocation());
-                    if (distance < 128) { // Within 128 blocks
-                        eventDragon.setTarget(player);
-                        break;
-                    }
-                }
-            }
-
-
-            // 1 over abilityRate chance to run an ability
-            if(random.nextInt(abilityRate) == 0) {
-
-                int ability = random.nextInt(6);
-
-                switch (ability) {
-                    case 0 -> {
-                        plugin.getLogger().info("Event Dragon is using respawn heal beacons ability!");
-                        DragonAbilities.getInstance().respawnHealBeaconsAbility();
-                    }
-                    case 1 -> {
-                        plugin.getLogger().info("Event Dragon is using spawn minions ability!");
-                        DragonAbilities.getInstance().spawnMinionsAbility();
-                    }
-                    case 2 -> {
-                        plugin.getLogger().info("Event Dragon is using angry endermen ability!");
-                        DragonAbilities.getInstance().angryEnderman();
-                    }
-                    case 3 -> {
-                        plugin.getLogger().info("Event Dragon is set to charge player");
-                        eventDragon.setPhase(EnderDragon.Phase.CHARGE_PLAYER);
-                    }
-                    case 4 -> {
-                        plugin.getLogger().info("Event Dragon is set to circling phase");
-                        eventDragon.setPhase(EnderDragon.Phase.BREATH_ATTACK);
-                    }
-                    case 5 -> {
-                        plugin.getLogger().info("Event Dragon is set to circling phase");
-                        eventDragon.setPhase(EnderDragon.Phase.ROAR_BEFORE_ATTACK);
-                    }
-                    default -> {
-                        plugin.getLogger().warning("Dragon circling");
-                        eventDragon.setPhase(EnderDragon.Phase.CIRCLING);
-
-                    }
-                }
+            } catch (IndexOutOfBoundsException e) {
+                plugin.getLogger().warning("No abilities to run, skipping this cycle.");
+                return;
+            } catch (Exception e) {
+                plugin.getLogger().severe("Error running abilities: " + e.getMessage());
 
             }
-
         }
     }
 }
