@@ -30,7 +30,8 @@ public class DragonAbilities {
         return instance;
     }
 
-
+    //TODO: USED in DragonEvents to get abilities for the dragon
+    //TODO: Add abilities for basic dragon things, make sure to include target getting
     public static List<Runnable> getAbilities() {
         List<Runnable> abilities = new ArrayList<>();
         abilities.add(DragonAbilities.getInstance()::spawnMinionsAbility);

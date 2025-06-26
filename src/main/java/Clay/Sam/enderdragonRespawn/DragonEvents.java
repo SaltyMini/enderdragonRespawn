@@ -263,6 +263,12 @@ public class DragonEvents implements Listener {
         @Override
         public void run() {
 
+            //TODO: Change this
+            //
+             // so plan is, make this run every 10 seconds, pick a random ability and add it to an array
+            // then run the abilities in the array, and clear the array after running them
+            // if ability is running skip it, dont let the list get over 5 items
+
 
             World endWorld = Bukkit.getWorld("world_the_end");
             if (endWorld == null) return;
