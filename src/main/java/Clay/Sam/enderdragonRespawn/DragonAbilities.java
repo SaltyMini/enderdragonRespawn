@@ -13,6 +13,8 @@ public class DragonAbilities {
     private final List<Location> beaconLocations = new ArrayList<>();
     private final DragonDamageTrack dragonDamageTrack;
 
+    World world;
+
 
     static DragonAbilities instance = null;
 
@@ -21,6 +23,8 @@ public class DragonAbilities {
         dragonDamageTrack = DragonDamageTrack.getInstance();
         addBeaconLocations();
         dragonPhase = 1;
+
+        world = Bukkit.getWorld("world_the_end");
         //start schedular for custom abilities
     }
 
@@ -36,7 +40,9 @@ public class DragonAbilities {
     private static final Runnable[] abilities = {
             DragonAbilities.getInstance()::spawnMinionsAbility,
             DragonAbilities.getInstance()::respawnHealBeaconsAbility,
-            DragonAbilities.getInstance()::angryEnderman
+            DragonAbilities.getInstance()::angryEnderman,
+            DragonAbilities.getInstance()::dragonCharge,
+            DragonAbilities.getInstance()::dragonBreath
     };
 
     public Runnable[] getAbilities() {
@@ -72,6 +78,11 @@ public class DragonAbilities {
 
     public void spawnMinionsAbility() {
 
+        EnderDragon dragon = DragonMob.getEventDragon();
+        if(dragon != null) {
+            dragon.setPhase(EnderDragon.Phase.STRAFING);
+        }
+
         int minionCount = 3; // Number of minions to spawn per player
         int topNPlayers = 5; // Number of top players to spawn at
 
@@ -79,9 +90,12 @@ public class DragonAbilities {
         for (Map.Entry<String, Float> entry : topPlayers) {
             String playerName = entry.getKey();
 
+
             Player player = Bukkit.getPlayer(playerName);
-            if(player.getWorld() != Bukkit.getWorld("world_the_end") ) continue;
-            if (player != null && player.isOnline()) {
+            if(player == null) {continue;}
+            if(player.getWorld() != world ) continue;
+
+            if (player.isOnline()) {
                 Location spawnLocation = player.getLocation().clone().add(0, 5, 0);
                 for (int j = 0; j < minionCount; j++) {
                     Endermite minion = (Endermite) spawnLocation.getWorld().spawnEntity(spawnLocation, EntityType.ENDERMITE);
@@ -94,6 +108,12 @@ public class DragonAbilities {
     }
 
     public void respawnHealBeaconsAbility() {
+
+        EnderDragon dragon = DragonMob.getEventDragon();
+        if(dragon != null) {
+            dragon.setPhase(EnderDragon.Phase.STRAFING);
+        }
+
         for (Location loc : beaconLocations) {
             loc.getWorld().getBlockAt(loc).setType(org.bukkit.Material.BEACON);
             loc.getWorld().getBlockAt(loc.clone().subtract(0, 1, 0)).setType(Material.BEDROCK);
@@ -102,6 +122,12 @@ public class DragonAbilities {
     }
 
     public void angryEnderman() {
+
+        EnderDragon dragon = DragonMob.getEventDragon();
+        if(dragon != null) {
+            dragon.setPhase(EnderDragon.Phase.STRAFING);
+        }
+
         for (Player player : Bukkit.getOnlinePlayers()) {
             if(player.getWorld() != Bukkit.getWorld("world_the_end") ) continue;
             Location playerLocation = player.getLocation();
@@ -115,8 +141,46 @@ public class DragonAbilities {
         }
     }
 
+    public void dragonCharge() {
+        EnderDragon dragon = DragonMob.getEventDragon();
+        if(dragon != null) {
+
+            Player target = getTarget();
+            dragon.setTarget(target);
+            dragon.setPhase(EnderDragon.Phase.CHARGE_PLAYER);
+        }
+    }
+
+    public void dragonBreath() {
+        EnderDragon dragon = DragonMob.getEventDragon();
+        if(dragon != null) {
+            Player target = getTarget();
+            dragon.setTarget(target);
+            dragon.setPhase(EnderDragon.Phase.BREATH_ATTACK);
+        }
+    }
 
     //Helper methods
+
+    public Player getTarget() {
+        EnderDragon dragon = DragonMob.getEventDragon();
+        if (dragon == null) return null;
+
+        Location dragonLocation = dragon.getLocation();
+        Player closestPlayer = null;
+        double closestDistanceSquared = Double.MAX_VALUE;
+
+        // Get players in the same world as the dragon
+        for (Player player : dragonLocation.getWorld().getPlayers()) {
+            double distanceSquared = dragonLocation.distanceSquared(player.getLocation());
+            if (distanceSquared < closestDistanceSquared) {
+                closestDistanceSquared = distanceSquared;
+                closestPlayer = player;
+            }
+        }
+        return closestPlayer;
+    }
+
 
     private void addBeaconLocations() {
         World world = Bukkit.getWorld("world_the_end");

@@ -17,9 +17,11 @@ public class DragonMob implements Listener {
 
     private static Plugin plugin;
     public static DragonMob instance = null;
+    static World world;
 
     public DragonMob() {
         plugin = EnderdragonRespawn.getPlugin();
+        world = Bukkit.getWorld("world_the_end");
     }
 
     public static DragonMob getInstance() {
@@ -87,6 +89,15 @@ public class DragonMob implements Listener {
     public static boolean isEventDragon(EnderDragon dragon) {
         NamespacedKey key = new NamespacedKey(plugin, "eventDragon");
         return dragon.getPersistentDataContainer().has(key, PersistentDataType.BOOLEAN);
+    }
+
+    public static EnderDragon getEventDragon() {
+        for(EnderDragon dragon : world.getEntitiesByClass(EnderDragon.class)) {
+            if (isEventDragon(dragon)) {
+                return dragon;
+            }
+        }
+        return null;
     }
 
 }

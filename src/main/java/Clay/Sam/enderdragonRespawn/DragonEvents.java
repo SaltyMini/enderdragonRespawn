@@ -245,7 +245,7 @@ public class DragonEvents implements Listener {
         StopDragonMobRunnable();
     
         DragonMobRunnable dragonMobRunnable = new DragonMobRunnable();
-        dragonRunnableTask = Bukkit.getScheduler().runTaskTimer(plugin, dragonMobRunnable, 0L, 20L);
+        dragonRunnableTask = Bukkit.getScheduler().runTaskTimer(plugin, dragonMobRunnable, 0L, 200L);
     
         plugin.getLogger().info("DragonMobRunnable started.");
     }
@@ -267,13 +267,8 @@ public class DragonEvents implements Listener {
 
         public DragonMobRunnable() {
             world = Bukkit.getWorld("world_the_end");
-            if (world == null) {
-                plugin.getLogger().warning("World 'world_the_end' not found during DragonMobRunnable initialization.");
-            }
-
-            if (random == null) {
-                random = new Random();
-            }
+            if (world == null) {plugin.getLogger().warning("World 'world_the_end' not found during DragonMobRunnable initialization.");}
+            if (random == null) {random = new Random();}
         }
 
         public boolean shouldEventHappen(int percentage, Random random) {
@@ -294,16 +289,11 @@ public class DragonEvents implements Listener {
                 if (!(shouldEventHappen(chancePercentage, random))) {
                     return;
                 }
-
                 int rand = random.nextInt(DragonAbilities.getInstance().getAbilities().length);
-
                 abilitiesQueue.add(DragonAbilities.getInstance().getAbilities()[rand]);
             }
-
             // run abilties
-
             try {
-
                 Runnable ability = abilitiesQueue.get(0);
                 ability.run();
                 abilitiesQueue.remove(0);
@@ -315,6 +305,8 @@ public class DragonEvents implements Listener {
                 plugin.getLogger().severe("Error running abilities: " + e.getMessage());
 
             }
+
+
         }
     }
 }
