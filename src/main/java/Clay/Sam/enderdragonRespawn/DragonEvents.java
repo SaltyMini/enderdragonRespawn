@@ -251,12 +251,18 @@ public class DragonEvents implements Listener {
 
     @EventHandler
     public void onChangeWorld(PlayerChangedWorldEvent event) {
-        if(event.getFrom().equals(endWorld)) {
             if(world.getPlayers().isEmpty()) {
                 if(dragonRunnableTask != null) {
                     StopDragonMobRunnable();
                     plugin.getLogger().info("DragonMobRunnable stopped due to no players in the end.");
                 }
+            }
+
+
+        if(world.getPlayers().size() > 0) {
+            if(dragonRunnableTask == null) {
+                StartDragonMobRunnable();
+                plugin.getLogger().info("DragonMobRunnable started due to players in the end.");
             }
         }
     }
