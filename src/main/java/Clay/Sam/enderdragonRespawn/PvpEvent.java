@@ -23,8 +23,5 @@ public class PvpEvent implements Listener {
                     player.sendMessage("§cYou cannot PvP on the main end island");
                 }
             }
-
-
-
     }
 }

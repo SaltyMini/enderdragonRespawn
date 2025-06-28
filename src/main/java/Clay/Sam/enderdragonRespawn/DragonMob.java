@@ -61,7 +61,9 @@ public class DragonMob implements Listener {
         dragon.setAI(true);
         dragon.setPhase(EnderDragon.Phase.CIRCLING);
 
-        DragonEvents.StartDragonMobRunnable();
+        if(world.getPlayers().size() > 0) {
+            DragonEvents.StartDragonMobRunnable();
+        }
     }
 
     public static void killExistingEventDragons() {

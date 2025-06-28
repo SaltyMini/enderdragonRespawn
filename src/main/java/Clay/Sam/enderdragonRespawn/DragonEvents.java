@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -26,7 +27,8 @@ public class DragonEvents implements Listener {
     private static BukkitTask dragonRunnableTask;
     private static Plugin plugin;
 
-
+    World endWorld;
+    World world;
 
     public DragonEvents() {
 
@@ -34,6 +36,14 @@ public class DragonEvents implements Listener {
         this.dragonDamageTrack = DragonDamageTrack.getInstance();
         this.dragonAbilities = DragonAbilities.getInstance();
 
+        endWorld = Bukkit.getWorld("world_the_end");
+        if (endWorld == null) {
+            plugin.getLogger().warning("World 'world_the_end' not found during DragonEvents initialization.");
+        }
+        world = Bukkit.getWorld("world");
+        if (world == null) {
+            plugin.getLogger().warning("World 'world' not found during DragonEvents initialization.");
+        }
     }
 
     public static DragonEvents getInstance() {
@@ -239,14 +249,26 @@ public class DragonEvents implements Listener {
         }
     }
 
-
+    @EventHandler
+    public void onChangeWorld(PlayerChangedWorldEvent event) {
+        if(event.getFrom().equals(endWorld)) {
+            if(world.getPlayers().isEmpty()) {
+                if(dragonRunnableTask != null) {
+                    StopDragonMobRunnable();
+                    plugin.getLogger().info("DragonMobRunnable stopped due to no players in the end.");
+                }
+            }
+        }
+    }
 
     public static synchronized void StartDragonMobRunnable() {
         StopDragonMobRunnable();
-    
-        DragonMobRunnable dragonMobRunnable = new DragonMobRunnable();
-        dragonRunnableTask = Bukkit.getScheduler().runTaskTimer(plugin, dragonMobRunnable, 0L, 200L);
-    
+
+        if(dragonRunnableTask == null) {
+            DragonMobRunnable dragonMobRunnable = new DragonMobRunnable();
+            dragonRunnableTask = Bukkit.getScheduler().runTaskTimer(plugin, dragonMobRunnable, 0L, 200L);
+        }
+
         plugin.getLogger().info("DragonMobRunnable started.");
     }
 
@@ -277,6 +299,15 @@ public class DragonEvents implements Listener {
 
         @Override
         public void run() {
+
+            //check players are still in end
+            if (world.getPlayers().isEmpty()) {
+                plugin.getLogger().info("No players in the end, stopping DragonMobRunnable.");
+                StopDragonMobRunnable();
+                return;
+            }
+
+
             //
             // Queue abilities
             //
@@ -300,7 +331,6 @@ public class DragonEvents implements Listener {
 
             } catch (IndexOutOfBoundsException e) {
                 plugin.getLogger().warning("No abilities to run, skipping this cycle.");
-                return;
             } catch (Exception e) {
                 plugin.getLogger().severe("Error running abilities: " + e.getMessage());
 
