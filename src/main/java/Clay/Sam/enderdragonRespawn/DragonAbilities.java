@@ -37,7 +37,7 @@ public class DragonAbilities {
 
     //TODO: USED in DragonEvents to get abilities for the dragon
     //TODO: Add abilities for basic dragon things, make sure to include target getting
-    private static final Runnable[] abilities = {
+    private static final Runnable[] abil1ities = {
             DragonAbilities.getInstance()::spawnMinionsAbility,
             DragonAbilities.getInstance()::respawnHealBeaconsAbility,
             DragonAbilities.getInstance()::angryEnderman,
@@ -45,10 +45,30 @@ public class DragonAbilities {
             DragonAbilities.getInstance()::dragonBreath
     };
 
-    public Runnable[] getAbilities() {
-        return abilities; // Direct array access
+    //
+     // RUNABLE STUFF
+    //
+
+    private static Runnable[] abilities;
+
+    private static synchronized Runnable[] getOrCreateAbilities() {
+        if (abilities == null) {
+            DragonAbilities instance = getInstance();
+            abilities = new Runnable[] {
+                    instance::spawnMinionsAbility,
+                    instance::respawnHealBeaconsAbility,
+                    instance::angryEnderman,
+                    instance::dragonCharge,
+                    instance::dragonBreath
+            };
+        }
+        return abilities;
     }
 
+    // Update the getter to use the lazy initialization
+    public Runnable[] getAbilities() {
+        return getOrCreateAbilities();
+    }
 
     //
      // Dragon Phase

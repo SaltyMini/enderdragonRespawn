@@ -24,9 +24,9 @@ public class DragonMob implements Listener {
         world = Bukkit.getWorld("world_the_end");
     }
 
-    public static DragonMob getInstance() {
+    public static synchronized DragonMob getInstance() {
         if (instance == null) {
-            return new DragonMob();
+            instance = new DragonMob();
         }
         return instance;
     }
@@ -83,7 +83,7 @@ public class DragonMob implements Listener {
                 }
         }
 
-        DragonDamageTrack.clearPlayerDamageMap();
+        DragonDamageTrack.getInstance().clearPlayerDamageMap();
         plugin.getLogger().info("Removed " + killedCount + " existing event dragon(s) on startup.");
 
     }

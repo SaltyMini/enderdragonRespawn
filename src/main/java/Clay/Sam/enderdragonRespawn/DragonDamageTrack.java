@@ -5,9 +5,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DragonDamageTrack {
 
-    static DragonDamageTrack instance = null;
+    private static DragonDamageTrack instance = null;
 
-    static ConcurrentHashMap<String, Float> playerDamageMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Float> playerDamageMap = new ConcurrentHashMap<>();
 
     public static synchronized DragonDamageTrack getInstance() {
         if (instance == null) {
@@ -20,7 +20,7 @@ public class DragonDamageTrack {
         playerDamageMap.merge(playerName, damage, Float::sum);
     }
 
-    public static void clearPlayerDamageMap() {
+    public void clearPlayerDamageMap() {
         playerDamageMap.clear();
     }
 

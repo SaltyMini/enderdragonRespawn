@@ -46,7 +46,7 @@ public class Loot {
         double currentWeight = 0;
         for (LootItem item : lootItems) {
             currentWeight += item.weight;
-            if (randomValue <= currentWeight) {
+            if (randomValue < currentWeight) {
                 return item;
             }
         }

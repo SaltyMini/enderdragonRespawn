@@ -259,7 +259,7 @@ public class DragonEvents implements Listener {
             }
 
 
-        if(world.getPlayers().size() > 0) {
+        if(!world.getPlayers().isEmpty()) {
             if(dragonRunnableTask == null) {
                 StartDragonMobRunnable();
                 plugin.getLogger().info("DragonMobRunnable started due to players in the end.");
@@ -291,12 +291,13 @@ public class DragonEvents implements Listener {
 
         World world;
         Random random;
-        private List<Runnable> abilitiesQueue = new ArrayList<>();
+        private final List<Runnable> abilitiesQueue;
 
         public DragonMobRunnable() {
             world = Bukkit.getWorld("world_the_end");
             if (world == null) {plugin.getLogger().warning("World 'world_the_end' not found during DragonMobRunnable initialization.");}
             if (random == null) {random = new Random();}
+            abilitiesQueue = new LinkedList<>();
         }
 
         public boolean shouldEventHappen(int percentage, Random random) {
@@ -331,9 +332,9 @@ public class DragonEvents implements Listener {
             }
             // run abilties
             try {
-                Runnable ability = abilitiesQueue.get(0);
+                Runnable ability = abilitiesQueue.getFirst();
                 ability.run();
-                abilitiesQueue.remove(0);
+                abilitiesQueue.removeFirst();
 
             } catch (IndexOutOfBoundsException e) {
                 plugin.getLogger().warning("No abilities to run, skipping this cycle.");
