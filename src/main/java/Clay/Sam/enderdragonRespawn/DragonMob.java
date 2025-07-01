@@ -4,8 +4,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
@@ -18,6 +21,8 @@ public class DragonMob implements Listener {
     private static Plugin plugin;
     public static DragonMob instance = null;
     static World world;
+    private static BossBar eventDragonBossBar;
+
 
     public DragonMob() {
         plugin = EnderdragonRespawn.getPlugin();
@@ -47,8 +52,6 @@ public class DragonMob implements Listener {
         if (dragon.getAttribute(Attribute.MAX_HEALTH) == null) return;
         Objects.requireNonNull(dragon.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(200 * healthMultiplier);
         dragon.setHealth(200 * healthMultiplier);
-
-
 
         NamespacedKey key = new NamespacedKey(plugin, "eventDragon");
         dragon.getPersistentDataContainer().set(key, PersistentDataType.BOOLEAN, true);
@@ -101,6 +104,22 @@ public class DragonMob implements Listener {
             }
         }
         return null;
+    }
+
+    public static void createBossBar() {
+        if(eventDragonBossBar != null) {
+            eventDragonBossBar.removeAll();
+        }
+
+        eventDragonBossBar = Bukkit.createBossBar("§c§lEvent Dragon", org.bukkit.boss.BarColor.RED, BarStyle.SEGMENTED_20);
+
+        eventDragonBossBar.setProgress(1.0);
+
+        for(Player player : plugin.getServer().getOnlinePlayers()) {
+            eventDragonBossBar.addPlayer(player);
+        }
+
+        eventDragonBossBar.setVisible(true);
     }
 
 }

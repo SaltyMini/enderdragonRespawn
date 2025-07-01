@@ -288,6 +288,7 @@ public class DragonEvents implements Listener {
         World world;
         Random random;
         private final ConcurrentLinkedQueue<Runnable> abilitiesQueue = new ConcurrentLinkedQueue<>();
+        int countCheck = 0;
 
         public DragonMobRunnable() {
             world = EnderdragonRespawn.getWorld();
@@ -300,6 +301,15 @@ public class DragonEvents implements Listener {
 
         @Override
         public void run() {
+
+            if(countCheck++ > 5) {
+                countCheck = 0;
+                if (DragonMob.getEventDragon() == null) {
+                    plugin.getLogger().info("No event dragon found, stopping DragonMobRunnable.");
+                    StopDragonMobRunnable();
+                    return;
+                }
+            }
 
             plugin.getLogger().info("DragonMobRunnable running...");
 
