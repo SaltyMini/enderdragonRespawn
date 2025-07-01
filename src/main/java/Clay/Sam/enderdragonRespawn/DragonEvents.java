@@ -266,7 +266,7 @@ public class DragonEvents implements Listener {
 
         if(dragonRunnableTask == null) {
             DragonMobRunnable dragonMobRunnable = new DragonMobRunnable();
-            dragonRunnableTask = Bukkit.getScheduler().runTaskTimer(plugin, dragonMobRunnable, 0L, 200L);
+            dragonRunnableTask = Bukkit.getScheduler().runTaskTimer(plugin, dragonMobRunnable, 0L, 100L);
         }
 
         plugin.getLogger().info("DragonMobRunnable started.");
@@ -300,6 +300,8 @@ public class DragonEvents implements Listener {
         @Override
         public void run() {
 
+            plugin.getLogger().info("DragonMobRunnable running...");
+
             //check players are still in end
             if (world.getPlayers().isEmpty()) {
                 plugin.getLogger().info("No players in the end, stopping DragonMobRunnable.");
@@ -328,6 +330,7 @@ public class DragonEvents implements Listener {
                 Runnable ability = abilitiesQueue.poll(); // Returns null if queue is empty
                 if (ability != null) {
                     ability.run();
+                    plugin.getLogger().info("Running ability: " + ability);
                 } else {
                     plugin.getLogger().warning("No abilities to run, skipping this cycle.");
                 }
