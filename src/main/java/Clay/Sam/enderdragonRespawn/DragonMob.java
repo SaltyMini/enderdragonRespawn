@@ -61,7 +61,9 @@ public class DragonMob implements Listener {
         dragon.setAI(true);
         dragon.setPhase(EnderDragon.Phase.CIRCLING);
 
-        if(world.getPlayers().size() > 0) {
+        DragonAbilities.getInstance().respawnHealBeaconsAbility();
+
+        if(!world.getPlayers().isEmpty()) {
             DragonEvents.StartDragonMobRunnable();
         }
     }
