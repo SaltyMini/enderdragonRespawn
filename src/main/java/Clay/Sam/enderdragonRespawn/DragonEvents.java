@@ -16,6 +16,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class DragonEvents implements Listener {
 
@@ -36,14 +37,7 @@ public class DragonEvents implements Listener {
         this.dragonDamageTrack = DragonDamageTrack.getInstance();
         this.dragonAbilities = DragonAbilities.getInstance();
 
-        endWorld = Bukkit.getWorld("world_the_end");
-        if (endWorld == null) {
-            plugin.getLogger().warning("World 'world_the_end' not found during DragonEvents initialization.");
-        }
-        world = Bukkit.getWorld("world");
-        if (world == null) {
-            plugin.getLogger().warning("World 'world' not found during DragonEvents initialization.");
-        }
+        world = EnderdragonRespawn.getWorld();
     }
 
     public static DragonEvents getInstance() {
@@ -195,8 +189,8 @@ public class DragonEvents implements Listener {
     //Increase damage done by dragon breath
     @EventHandler
     public void onBreathDmg(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof EnderDragon dragon)) return;
-        if (!(DragonMob.isEventDragon(dragon))) return;
+        if (!(event.getEntity() instanceof Player)) return;
+        if (DragonMob.getEventDragon() == null) return;
         if (event.getEntity() instanceof Player) {
             event.setDamage(event.getDamage() * 2);
         }
@@ -291,12 +285,12 @@ public class DragonEvents implements Listener {
 
         World world;
         Random random;
-        private List<Runnable> abilitiesQueue = new ArrayList<>();
+        private ConcurrentLinkedQueue<Runnable> abilitiesQueue = new ConcurrentLinkedQueue<>();
 
         public DragonMobRunnable() {
-            world = Bukkit.getWorld("world_the_end");
-            if (world == null) {plugin.getLogger().warning("World 'world_the_end' not found during DragonMobRunnable initialization.");}
-            if (random == null) {random = new Random();}
+            world = EnderdragonRespawn.getWorld();
+            if (random == null) {
+                random = new Random();}
         }
 
         public boolean shouldEventHappen(int percentage, Random random) {
@@ -327,13 +321,17 @@ public class DragonEvents implements Listener {
                     return;
                 }
                 int rand = random.nextInt(DragonAbilities.getInstance().getAbilities().length);
-                abilitiesQueue.add(DragonAbilities.getInstance().getAbilities()[rand]);
+                abilitiesQueue.offer(DragonAbilities.getInstance().getAbilities()[rand]);
             }
             // run abilties
             try {
-                Runnable ability = abilitiesQueue.get(0);
-                ability.run();
-                abilitiesQueue.remove(0);
+                Runnable ability = abilitiesQueue.poll(); // Returns null if queue is empty
+                if (ability != null) {
+                    ability.run();
+                } else {
+                    plugin.getLogger().warning("No abilities to run, skipping this cycle.");
+                }
+
 
             } catch (IndexOutOfBoundsException e) {
                 plugin.getLogger().warning("No abilities to run, skipping this cycle.");
