@@ -24,7 +24,7 @@ public class DragonAbilities {
         addBeaconLocations();
         dragonPhase = 1;
 
-        world = Bukkit.getWorld("world_the_end");
+        world = EnderdragonRespawn.getWorld();
         //start schedular for custom abilities
     }
 
@@ -37,12 +37,12 @@ public class DragonAbilities {
 
     //TODO: USED in DragonEvents to get abilities for the dragon
     //TODO: Add abilities for basic dragon things, make sure to include target getting
-    private static final Runnable[] abilities = {
-            DragonAbilities.getInstance()::spawnMinionsAbility,
-            DragonAbilities.getInstance()::respawnHealBeaconsAbility,
-            DragonAbilities.getInstance()::angryEnderman,
-            DragonAbilities.getInstance()::dragonCharge,
-            DragonAbilities.getInstance()::dragonBreath
+    private final Runnable[] abilities = {
+            this::spawnMinionsAbility,
+            this::respawnHealBeaconsAbility,
+            this::angryEnderman,
+            this::dragonCharge,
+            this::dragonBreath
     };
 
     public Runnable[] getAbilities() {
@@ -95,15 +95,13 @@ public class DragonAbilities {
             if(player == null) {continue;}
             if(player.getWorld() != world ) continue;
 
-            if (player.isOnline()) {
-                Location spawnLocation = player.getLocation().clone().add(0, 5, 0);
-                for (int j = 0; j < minionCount; j++) {
-                    Endermite minion = (Endermite) spawnLocation.getWorld().spawnEntity(spawnLocation, EntityType.ENDERMITE);
-                    minion.customName(Component.text("Minion of " + playerName));
-                }
-
-                plugin.getLogger().info("Spawned minion for " + playerName + " at " + spawnLocation);
+            Location spawnLocation = player.getLocation().clone().add(0, 5, 0);
+            for (int j = 0; j < minionCount; j++) {
+                Endermite minion = (Endermite) spawnLocation.getWorld().spawnEntity(spawnLocation, EntityType.ENDERMITE);
+                minion.customName(Component.text("Minion of " + playerName));
             }
+            plugin.getLogger().info("Spawned minion for " + playerName + " at " + spawnLocation);
+
         }
     }
 
