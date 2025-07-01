@@ -21,7 +21,7 @@ public class DragonMob implements Listener {
 
     public DragonMob() {
         plugin = EnderdragonRespawn.getPlugin();
-        world = Bukkit.getWorld("world_the_end");
+        world = EnderdragonRespawn.getWorld();
     }
 
     public static DragonMob getInstance() {
