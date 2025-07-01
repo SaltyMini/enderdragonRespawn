@@ -15,6 +15,7 @@ import java.util.Objects;
 public final class EnderdragonRespawn extends JavaPlugin implements CommandExecutor {
 
     private static Plugin plugin;
+    private static World world;
 
     @Override
     public void onEnable() {
@@ -33,6 +34,13 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
         Bukkit.getPluginManager().registerEvents(new PvpEvent(), this);
 
         Bukkit.getPluginManager().registerEvents(DragonEvents.getInstance(), this);
+
+        world = Bukkit.getWorld("world_the_end");
+        if (world == null) {
+            getLogger().warning("World 'world_the_end' not found during startup.");
+        }
+
+
 
     }
 
@@ -94,6 +102,10 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
 
     public static Plugin getPlugin() {
         return plugin;
+    }
+
+    public static World getWorld() {
+        return world;
     }
 
 }
