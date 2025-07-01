@@ -122,4 +122,28 @@ public class DragonMob implements Listener {
         eventDragonBossBar.setVisible(true);
     }
 
+    public static void updateBossBar() {
+        EnderDragon dragon = getEventDragon();
+        if (dragon == null || eventDragonBossBar == null) return;
+
+        double health = dragon.getHealth();
+        double maxHealth = dragon.getAttribute(Attribute.MAX_HEALTH).getValue();
+
+        eventDragonBossBar.setProgress(health / maxHealth);
+        eventDragonBossBar.setTitle("§c§lEvent Dragon - " + (int) health + " / " + (int) maxHealth + " HP");
+    }
+
+    public static void removeBossBarPlayer(Player player) {
+        if(eventDragonBossBar != null) {
+            eventDragonBossBar.removePlayer(player);
+        }
+    }
+
+    public static void removeBossBar() {
+        if(eventDragonBossBar != null) {
+            eventDragonBossBar.removeAll();
+            eventDragonBossBar = null;
+        }
+    }
+
 }
