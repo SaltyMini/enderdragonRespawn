@@ -13,7 +13,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class DragonMob implements Listener {
@@ -22,6 +27,8 @@ public class DragonMob implements Listener {
     public static DragonMob instance = null;
     static World world;
     private static BossBar eventDragonBossBar;
+    private static Scoreboard scoreboard;
+    private static Objective objective;
 
 
     public DragonMob() {
@@ -64,6 +71,9 @@ public class DragonMob implements Listener {
         dragon.setPhase(EnderDragon.Phase.CIRCLING);
 
         DragonAbilities.getInstance().respawnHealBeaconsAbility();
+
+        createBossBar();
+        createScoreboard();
 
         if(!world.getPlayers().isEmpty()) {
             DragonEvents.StartDragonMobRunnable();
@@ -122,6 +132,10 @@ public class DragonMob implements Listener {
         eventDragonBossBar.setVisible(true);
     }
 
+    //
+     // // Boss Bar Methods
+     //
+
     public static void updateBossBar() {
         EnderDragon dragon = getEventDragon();
         if (dragon == null || eventDragonBossBar == null) return;
@@ -146,4 +160,55 @@ public class DragonMob implements Listener {
         }
     }
 
+    //
+     // Scoreboard Methods
+    //
+
+    public static void createScoreboard() {
+        if(scoreboard == null || objective == null) { return; }
+
+        scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+
+        objective = scoreboard.registerNewObjective("eventDragon", "dummy", "§c§lEvent Dragon");
+
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+        objective.getScore("§c§l   Top Damage     ").setScore(1);
+        objective.getScore("§6      --").setScore(2);
+        objective.getScore("§6      --").setScore(3);
+        objective.getScore("§6      --").setScore(4);
+        objective.getScore("§7      --").setScore(5);
+        objective.getScore("§7      --").setScore(6);
+
+        for(Player player : Bukkit.getOnlinePlayers()) {
+            player.setScoreboard(scoreboard);
+        }
+    }
+
+    public static void updateScoreboard() {
+        List<Map.Entry<String, Float>> topPlayers = DragonDamageTrack.getInstance().getTopPlayers(5);
+
+        objective.getScore("§c§l   Top Damage     ").setScore(1);
+        objective.getScore("§6"+topPlayers.get(0)).setScore(2);
+        objective.getScore("§6"+topPlayers.get(1)).setScore(3);
+        objective.getScore("§6"+topPlayers.get(2)).setScore(4);
+        objective.getScore("§6"+topPlayers.get(3)).setScore(5);
+        objective.getScore("§6"+topPlayers.get(4)).setScore(6);
+    }
+
+    public static void removeScoreboard() {
+        if(scoreboard != null) {
+            for(Player player : Bukkit.getOnlinePlayers()) {
+                player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+            }
+            scoreboard = null;
+            objective = null;
+        }
+    }
+
+    public static void removeScoreboardPlayer(Player player) {
+        if (scoreboard != null) {
+            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        }
+    }
 }

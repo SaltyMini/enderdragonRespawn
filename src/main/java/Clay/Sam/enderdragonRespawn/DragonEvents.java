@@ -152,6 +152,8 @@ public class DragonEvents implements Listener {
 
         }
 
+        DragonMob.removeScoreboard();
+        DragonMob.removeBossBar();
         StopDragonMobRunnable();
     }
 

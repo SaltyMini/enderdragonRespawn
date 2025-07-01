@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -93,6 +94,14 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
             DragonMob.killExistingEventDragons();
             commandSender.sendMessage("All existing event dragons have been removed.");
             return true;
+        } else if (command.getLabel().equalsIgnoreCase("hideEventBar")) {
+
+            if(commandSender instanceof Player player) {
+                DragonMob.removeBossBarPlayer(player);
+                DragonMob.removeScoreboardPlayer(player);
+                return true;
+            }
+
         }
 
         return true;
