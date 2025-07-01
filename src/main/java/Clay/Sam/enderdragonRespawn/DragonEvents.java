@@ -28,7 +28,6 @@ public class DragonEvents implements Listener {
     private static BukkitTask dragonRunnableTask;
     private static Plugin plugin;
 
-    World endWorld;
     World world;
 
     public DragonEvents() {
@@ -245,15 +244,18 @@ public class DragonEvents implements Listener {
 
     @EventHandler
     public void onChangeWorld(PlayerChangedWorldEvent event) {
-            if(world.getPlayers().isEmpty()) {
-                if(dragonRunnableTask != null) {
-                    StopDragonMobRunnable();
-                    plugin.getLogger().info("DragonMobRunnable stopped due to no players in the end.");
-                }
+
+        if(DragonMob.getEventDragon() == null) return;
+
+        if(world.getPlayers().isEmpty()) {
+            if(dragonRunnableTask != null) {
+                StopDragonMobRunnable();
+                plugin.getLogger().info("DragonMobRunnable stopped due to no players in the end.");
             }
+        }
 
 
-        if(world.getPlayers().size() > 0) {
+        if(!world.getPlayers().isEmpty()) {
             if(dragonRunnableTask == null) {
                 StartDragonMobRunnable();
                 plugin.getLogger().info("DragonMobRunnable started due to players in the end.");
@@ -285,12 +287,11 @@ public class DragonEvents implements Listener {
 
         World world;
         Random random;
-        private ConcurrentLinkedQueue<Runnable> abilitiesQueue = new ConcurrentLinkedQueue<>();
+        private final ConcurrentLinkedQueue<Runnable> abilitiesQueue = new ConcurrentLinkedQueue<>();
 
         public DragonMobRunnable() {
             world = EnderdragonRespawn.getWorld();
-            if (random == null) {
-                random = new Random();}
+            random = new Random();
         }
 
         public boolean shouldEventHappen(int percentage, Random random) {

@@ -54,7 +54,6 @@ public class DragonMob implements Listener {
         dragon.getPersistentDataContainer().set(key, PersistentDataType.BOOLEAN, true);
 
         dragon.setCustomName("§c§lEvent Dragon");
-        dragon.setCustomNameVisible(true);
 
 
         DragonAbilities.getInstance().resetDragonPhase();

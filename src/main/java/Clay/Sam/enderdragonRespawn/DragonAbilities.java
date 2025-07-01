@@ -175,9 +175,8 @@ public class DragonAbilities {
             plugin.getLogger().warning("No players found in the End world.");
             return null; // No players in the End world
         }
-        Player target = endPlayers.get(rand.nextInt(endPlayers.size()));
 
-        return target;
+        return endPlayers.get(rand.nextInt(endPlayers.size()));
     }
 
 

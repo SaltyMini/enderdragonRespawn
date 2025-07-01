@@ -7,7 +7,7 @@ public class DragonDamageTrack {
 
     private static DragonDamageTrack instance = null;
 
-    private ConcurrentHashMap<String, Float> playerDamageMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Float> playerDamageMap = new ConcurrentHashMap<>();
 
     public static synchronized DragonDamageTrack getInstance() {
         if (instance == null) {
