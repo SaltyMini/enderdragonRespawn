@@ -1,5 +1,5 @@
 name: enderdragonRespawn
-version: '1.1'
+version: '1.2'
 main: Clay.Sam.enderdragonRespawn.EnderdragonRespawn
 api-version: '1.21'
 author: Clay.Sam

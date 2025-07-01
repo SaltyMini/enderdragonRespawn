@@ -22,6 +22,11 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
 
         plugin = this;
 
+        world = Bukkit.getWorld("world_the_end");
+        if (world == null) {
+            getLogger().warning("World 'world_the_end' not found during startup.");
+        }
+
         Objects.requireNonNull(this.getCommand("spawnEventDragon")).setExecutor(this);
         Objects.requireNonNull(this.getCommand("killEventDragon")).setExecutor(this);
 
@@ -34,13 +39,6 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
         Bukkit.getPluginManager().registerEvents(new PvpEvent(), this);
 
         Bukkit.getPluginManager().registerEvents(DragonEvents.getInstance(), this);
-
-        world = Bukkit.getWorld("world_the_end");
-        if (world == null) {
-            getLogger().warning("World 'world_the_end' not found during startup.");
-        }
-
-
 
     }
 
