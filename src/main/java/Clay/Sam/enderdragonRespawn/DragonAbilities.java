@@ -194,12 +194,6 @@ public class DragonAbilities {
 
 
     private void addBeaconLocations() {
-        World world = Bukkit.getWorld("world_the_end");
-        if (world == null) {
-            plugin.getLogger().warning("End world not found for beacon locations");
-            return;
-        }
-
         beaconLocations.add(new Location(world, -42, 92, -1));
         beaconLocations.add(new Location(world, -34, 83, -25));
         beaconLocations.add(new Location(world, -13, 104, -40));
