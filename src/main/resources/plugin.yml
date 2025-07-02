@@ -16,7 +16,9 @@ commands:
     description: Kills all existing event dragons
     usage: /killEventDragon
     permission: enderdragonrespawn.kill
-
+  hideEventBar:
+    description: Hides the event dragon health bar
+    usage: /hideEventBar
 
 
 permissions:

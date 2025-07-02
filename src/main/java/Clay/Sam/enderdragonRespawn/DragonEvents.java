@@ -304,8 +304,12 @@ public class DragonEvents implements Listener {
         @Override
         public void run() {
 
+            DragonMob.updateScoreboard();
+
             if(countCheck++ > 5) {
                 countCheck = 0;
+
+
                 if (DragonMob.getEventDragon() == null) {
                     plugin.getLogger().info("No event dragon found, stopping DragonMobRunnable.");
                     StopDragonMobRunnable();

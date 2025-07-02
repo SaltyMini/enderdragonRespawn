@@ -78,10 +78,7 @@ public class DragonAbilities {
 
     public void spawnMinionsAbility() {
 
-        EnderDragon dragon = DragonMob.getEventDragon();
-        if(dragon != null) {
-            dragon.setPhase(EnderDragon.Phase.SEARCH_FOR_BREATH_ATTACK_TARGET);
-        }
+        dragonCharge();
 
         int minionCount = 3; // Number of minions to spawn per player
         int topNPlayers = 5; // Number of top players to spawn at
@@ -107,10 +104,7 @@ public class DragonAbilities {
 
     public void respawnHealBeaconsAbility() {
 
-        EnderDragon dragon = DragonMob.getEventDragon();
-        if(dragon != null) {
-            dragon.setPhase(EnderDragon.Phase.SEARCH_FOR_BREATH_ATTACK_TARGET);
-        }
+        dragonCharge();
 
         for (Location loc : beaconLocations) {
             loc.getWorld().getBlockAt(loc).setType(org.bukkit.Material.BEACON);
@@ -121,10 +115,7 @@ public class DragonAbilities {
 
     public void angryEnderman() {
 
-        EnderDragon dragon = DragonMob.getEventDragon();
-        if(dragon != null) {
-            dragon.setPhase(EnderDragon.Phase.SEARCH_FOR_BREATH_ATTACK_TARGET);
-        }
+        dragonCharge();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if(player.getWorld() != Bukkit.getWorld("world_the_end") ) continue;
@@ -161,22 +152,33 @@ public class DragonAbilities {
 
     public Player getTarget() {
         EnderDragon dragon = DragonMob.getEventDragon();
-        if (dragon == null) return null;
+        if (dragon == null) {
+            plugin.getLogger().warning("getTarget: Dragon is null");
+            return null;
+        }
 
-        List<Player> endPlayers  = new ArrayList<>();
+        List<Player> endPlayers = new ArrayList<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getWorld().getName().equals("world_the_end")) {
+            String worldName = player.getWorld().getName();
+            plugin.getLogger().info("Player " + player.getName() + " is in world: " + worldName);
+        
+            if (worldName.equalsIgnoreCase("world_the_end")) {
                 endPlayers.add(player);
+                plugin.getLogger().info("Added player " + player.getName() + " to end players list");
             }
         }
+
+        plugin.getLogger().info("Found " + endPlayers.size() + " players in the End");
 
         Random rand = new Random();
         if (endPlayers.isEmpty()) {
             plugin.getLogger().warning("No players found in the End world.");
-            return null; // No players in the End world
+            return null;
         }
 
-        return endPlayers.get(rand.nextInt(endPlayers.size()));
+        Player selectedTarget = endPlayers.get(rand.nextInt(endPlayers.size()));
+        plugin.getLogger().info("Selected target: " + selectedTarget.getName());
+        return selectedTarget;
     }
 
 

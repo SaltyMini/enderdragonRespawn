@@ -30,6 +30,7 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
 
         Objects.requireNonNull(this.getCommand("spawnEventDragon")).setExecutor(this);
         Objects.requireNonNull(this.getCommand("killEventDragon")).setExecutor(this);
+        Objects.requireNonNull(this.getCommand("hideEventBar")).setExecutor(this);
 
         DragonMob.getInstance();
         DragonAbilities.getInstance();

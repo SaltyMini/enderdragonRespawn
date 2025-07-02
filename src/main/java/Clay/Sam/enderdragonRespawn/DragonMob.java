@@ -1,9 +1,6 @@
 package Clay.Sam.enderdragonRespawn;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.EnderDragon;
@@ -165,20 +162,18 @@ public class DragonMob implements Listener {
     //
 
     public static void createScoreboard() {
-        if(scoreboard == null || objective == null) { return; }
+        if(scoreboard != null && objective != null) { return; }
 
         scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-
         objective = scoreboard.registerNewObjective("eventDragon", "dummy", "§c§lEvent Dragon");
-
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        objective.getScore("§c§l   Top Damage     ").setScore(1);
-        objective.getScore("§6      --").setScore(2);
-        objective.getScore("§6      --").setScore(3);
+        objective.getScore("§c§l   Top Damage     ").setScore(6);
+        objective.getScore("§6      --").setScore(5);
         objective.getScore("§6      --").setScore(4);
-        objective.getScore("§7      --").setScore(5);
-        objective.getScore("§7      --").setScore(6);
+        objective.getScore("§6      --").setScore(3);
+        objective.getScore("§7      --").setScore(2);
+        objective.getScore("§7      --").setScore(1);
 
         for(Player player : Bukkit.getOnlinePlayers()) {
             player.setScoreboard(scoreboard);
@@ -186,14 +181,20 @@ public class DragonMob implements Listener {
     }
 
     public static void updateScoreboard() {
+        if (objective == null) return;
+        
         List<Map.Entry<String, Float>> topPlayers = DragonDamageTrack.getInstance().getTopPlayers(5);
-
-        objective.getScore("§c§l   Top Damage     ").setScore(1);
-        objective.getScore("§6"+topPlayers.get(0)).setScore(2);
-        objective.getScore("§6"+topPlayers.get(1)).setScore(3);
-        objective.getScore("§6"+topPlayers.get(2)).setScore(4);
-        objective.getScore("§6"+topPlayers.get(3)).setScore(5);
-        objective.getScore("§6"+topPlayers.get(4)).setScore(6);
+        
+        scoreboard.clearSlot(DisplaySlot.SIDEBAR);
+        
+        for (int i = 0; i < 5; i++) {
+            String display = "§7      --";
+            if (i < topPlayers.size()) {
+                Map.Entry<String, Float> player = topPlayers.get(i);
+                display = "§6" + player.getKey() + ": " + String.format("%.1f", player.getValue());
+            }
+            objective.getScore(display).setScore(5 - i);
+        }
     }
 
     public static void removeScoreboard() {
@@ -209,6 +210,14 @@ public class DragonMob implements Listener {
     public static void removeScoreboardPlayer(Player player) {
         if (scoreboard != null) {
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        }
+    }
+
+    public static void dragonRawAll() {
+        for(Player player : Bukkit.getOnlinePlayers()) {
+            if(player.getWorld() == world) {
+                player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
+            }
         }
     }
 }
