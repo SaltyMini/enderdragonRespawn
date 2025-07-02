@@ -2,8 +2,11 @@ package Clay.Sam.enderdragonRespawn;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
@@ -35,14 +38,17 @@ public class DragonAbilities {
         return instance;
     }
 
-    //TODO: USED in DragonEvents to get abilities for the dragon
-    //TODO: Add abilities for basic dragon things, make sure to include target getting
+    //
+    // Array of abilities, add new abilities here
+    //
+
     private final Runnable[] abilities = {
             this::spawnMinionsAbility,
             this::respawnHealBeaconsAbility,
             this::angryEnderman,
             this::dragonCharge,
-            this::dragonBreath
+            this::dragonBreath,
+            this::antiGravityAbility
     };
 
     public Runnable[] getAbilities() {
@@ -80,26 +86,30 @@ public class DragonAbilities {
 
         dragonCharge();
 
-        int minionCount = 3; // Number of minions to spawn per player
-        int topNPlayers = 5; // Number of top players to spawn at
+        int minionCount = 10; // Number of minions to spawn per player
+        int healthModifier = 2; // Health multiplier for minions
 
-        List<Map.Entry<String, Float>> topPlayers = dragonDamageTrack.getTopPlayers(topNPlayers);
-        for (Map.Entry<String, Float> entry : topPlayers) {
-            String playerName = entry.getKey();
+        for(Player player : Bukkit.getOnlinePlayers()) {
+            if(player.getWorld() != world ) continue;
+            for(int i = 0; i < minionCount; i++) {
+                Endermite minion = (Endermite) world.spawnEntity(player.getLocation(), EntityType.ENDERMITE);
+                minion.customName(Component.text("§c§lEvent Minion"));
+                //I hate this line but its fine for now
+                Objects.requireNonNull(minion.getAttribute(Attribute.MAX_HEALTH)).setBaseValue(Objects.requireNonNull(minion.getAttribute(Attribute.MAX_HEALTH)).getBaseValue() * healthModifier);
+            }
+        }
+    }
 
+    public void antiGravityAbility() {
 
-            Player player = Bukkit.getPlayer(playerName);
-            if(player == null) {continue;}
+        PotionEffect potion = new PotionEffect(PotionEffectType.LEVITATION, 200, 1);
+
+        for(Player player : Bukkit.getOnlinePlayers()) {
             if(player.getWorld() != world ) continue;
 
-            Location spawnLocation = player.getLocation().clone().add(0, 5, 0);
-            for (int j = 0; j < minionCount; j++) {
-                Endermite minion = (Endermite) spawnLocation.getWorld().spawnEntity(spawnLocation, EntityType.ENDERMITE);
-                minion.customName(Component.text("Minion of " + playerName));
-            }
-            plugin.getLogger().info("Spawned minion for " + playerName + " at " + spawnLocation);
-
+            player.addPotionEffect(potion);
         }
+
     }
 
     public void respawnHealBeaconsAbility() {
@@ -133,6 +143,7 @@ public class DragonAbilities {
     public void dragonCharge() {
         EnderDragon dragon = DragonMob.getEventDragon();
         if(dragon != null) {
+            DragonMob.dragonRawAll();
             Player target = getTarget();
             dragon.setTarget(target);
             dragon.setPhase(EnderDragon.Phase.CHARGE_PLAYER);
@@ -200,8 +211,4 @@ public class DragonAbilities {
         beaconLocations.add(new Location(world, -13, 86, 39));
         beaconLocations.add(new Location(world, -34, 89, 24));
     }
-
-
-
-
 }

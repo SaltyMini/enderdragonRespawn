@@ -22,7 +22,7 @@ public class DragonMob implements Listener {
 
     private static Plugin plugin;
     public static DragonMob instance = null;
-    static World world;
+    private static World world;
     private static BossBar eventDragonBossBar;
     private static Scoreboard scoreboard;
     private static Objective objective;
