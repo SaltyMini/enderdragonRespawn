@@ -7,6 +7,7 @@ import org.bukkit.entity.*;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 
@@ -48,7 +49,8 @@ public class DragonAbilities {
             this::angryEnderman,
             this::dragonCharge,
             this::dragonBreath,
-            this::antiGravityAbility
+            this::antiGravityAbility,
+            this::rainFireAbility
     };
 
     public Runnable[] getAbilities() {
@@ -81,6 +83,43 @@ public class DragonAbilities {
      // Abilities
     //
 
+    int fireballCount = 4; // Number of fireballs to spawn per player
+    int fireBallsSent = 0;
+
+    public void rainFireAbility() {
+
+        for(Player player : Bukkit.getOnlinePlayers()) {
+            if(player.getWorld() != world ) continue;
+            Bukkit.getScheduler().runTaskLater(plugin, () -> spawnFireball(player), 60);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> spawnFireball(player), 120);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> spawnFireball(player), 180);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> spawnFireball(player), 240);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> spawnFireball(player), 300);
+        }
+
+    }
+
+    //this may be inefficient
+    private void spawnFireball(Player player) {
+        Location spawnLoc = player.getLocation().clone().add(0, 10, 0);
+        Vector velocity = new Vector(0, -2, 0); // 2x downward
+
+        Fireball fireball = (Fireball) player.getWorld().spawnEntity(spawnLoc, EntityType.FIREBALL);
+        fireball.setVelocity(velocity);
+        fireball.setIsIncendiary(false);
+        fireball.setYield(0);
+        fireball.setInvisible(true);
+        fireball.setShooter(player);
+
+        // Visible dragon breath
+        DragonFireball dragonFireball = (DragonFireball) player.getWorld().spawnEntity(spawnLoc, EntityType.DRAGON_FIREBALL);
+        dragonFireball.setVelocity(velocity);
+        dragonFireball.setShooter(player);
+    }
+
+
+
+
 
     public void spawnMinionsAbility() {
 
@@ -102,10 +141,11 @@ public class DragonAbilities {
 
     public void antiGravityAbility() {
 
-        PotionEffect potion = new PotionEffect(PotionEffectType.LEVITATION, 200, 1);
+        PotionEffect potion = new PotionEffect(PotionEffectType.LEVITATION, 100, 1);
 
         for(Player player : Bukkit.getOnlinePlayers()) {
             if(player.getWorld() != world ) continue;
+            player.playSound(player.getLocation(), Sound.ENTITY_SHULKER_SHOOT, 1.0f, 1.0f);
 
             player.addPotionEffect(potion);
         }
@@ -115,6 +155,10 @@ public class DragonAbilities {
     public void respawnHealBeaconsAbility() {
 
         dragonCharge();
+
+        if(beaconLocations.isEmpty()) {
+            addBeaconLocations();
+        }
 
         for (Location loc : beaconLocations) {
             loc.getWorld().getBlockAt(loc).setType(org.bukkit.Material.BEACON);
@@ -130,7 +174,7 @@ public class DragonAbilities {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if(player.getWorld() != Bukkit.getWorld("world_the_end") ) continue;
             Location playerLocation = player.getLocation();
-            for (Entity entity : playerLocation.getWorld().getNearbyEntities(playerLocation, 15, 15, 15)) {
+            for (Entity entity : playerLocation.getWorld().getNearbyEntities(playerLocation, 15, 100, 15)) {
                 if (entity.getType() == EntityType.ENDERMAN) {
                     Enderman enderman = (Enderman) entity;
                     enderman.setTarget(player);
@@ -194,15 +238,20 @@ public class DragonAbilities {
 
 
     private void addBeaconLocations() {
-        beaconLocations.add(new Location(world, -42, 92, -1));
-        beaconLocations.add(new Location(world, -34, 83, -25));
-        beaconLocations.add(new Location(world, -13, 104, -40));
-        beaconLocations.add(new Location(world, 12, 77, -40));
-        beaconLocations.add(new Location(world, 33, 98, -25));
-        beaconLocations.add(new Location(world, 42, 101, 0));
-        beaconLocations.add(new Location(world, 33, 95, 24));
-        beaconLocations.add(new Location(world, 12, 90, 40));
-        beaconLocations.add(new Location(world, -13, 86, 39));
-        beaconLocations.add(new Location(world, -34, 89, 24));
+        World endWorld = Bukkit.getWorld("world_the_end");
+        if (endWorld == null) {
+            plugin.getLogger().warning("World 'world_the_end' not found when adding beacon locations.");
+            return; // World not found
+        }
+        beaconLocations.add(new Location(endWorld, -42, 92, -1));
+        beaconLocations.add(new Location(endWorld, -34, 83, -25));
+        beaconLocations.add(new Location(endWorld, -13, 104, -40));
+        beaconLocations.add(new Location(endWorld, 12, 77, -40));
+        beaconLocations.add(new Location(endWorld, 33, 98, -25));
+        beaconLocations.add(new Location(endWorld, 42, 101, 0));
+        beaconLocations.add(new Location(endWorld, 33, 95, 24));
+        beaconLocations.add(new Location(endWorld, 12, 90, 40));
+        beaconLocations.add(new Location(endWorld, -13, 86, 39));
+        beaconLocations.add(new Location(endWorld, -34, 89, 24));
     }
 }

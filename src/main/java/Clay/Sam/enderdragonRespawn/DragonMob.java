@@ -13,6 +13,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.attribute.AttributeInstance;
 
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,8 @@ public class DragonMob implements Listener {
     private static BossBar eventDragonBossBar;
     private static Scoreboard scoreboard;
     private static Objective objective;
+
+    private static AttributeInstance maxHealthAttribute;
 
 
     public DragonMob() {
@@ -105,6 +108,10 @@ public class DragonMob implements Listener {
     }
 
     public static EnderDragon getEventDragon() {
+        if(world == null) {
+            plugin.getLogger().warning("World 'world_the_end' not found when trying to get event dragon.");
+            return null; // World not found
+        }
         for(EnderDragon dragon : world.getEntitiesByClass(EnderDragon.class)) {
             if (isEventDragon(dragon)) {
                 return dragon;
@@ -116,6 +123,7 @@ public class DragonMob implements Listener {
     public static void createBossBar() {
         if(eventDragonBossBar != null) {
             eventDragonBossBar.removeAll();
+            eventDragonBossBar.setVisible(false);
         }
 
         eventDragonBossBar = Bukkit.createBossBar("§c§lEvent Dragon", org.bukkit.boss.BarColor.RED, BarStyle.SEGMENTED_20);
@@ -137,10 +145,16 @@ public class DragonMob implements Listener {
         EnderDragon dragon = getEventDragon();
         if (dragon == null || eventDragonBossBar == null) return;
 
+        if(maxHealthAttribute == null) {
+            maxHealthAttribute = dragon.getAttribute(Attribute.MAX_HEALTH);
+        }
+        
+        if(maxHealthAttribute == null) return;
+        
         double health = dragon.getHealth();
-        double maxHealth = dragon.getAttribute(Attribute.MAX_HEALTH).getValue();
+        double maxHealth = maxHealthAttribute.getValue();
 
-        eventDragonBossBar.setProgress(health / maxHealth);
+        eventDragonBossBar.setProgress(Math.max(0.0, health / maxHealth));
         eventDragonBossBar.setTitle("§c§lEvent Dragon - " + (int) health + " / " + (int) maxHealth + " HP");
     }
 
@@ -180,13 +194,21 @@ public class DragonMob implements Listener {
         }
     }
 
+    // BUG: clearSlot then immediately set scores can cause conflicts
     public static void updateScoreboard() {
         if (objective == null) return;
         
         List<Map.Entry<String, Float>> topPlayers = DragonDamageTrack.getInstance().getTopPlayers(5);
         
-        scoreboard.clearSlot(DisplaySlot.SIDEBAR);
+        // FIX: Remove individual scores instead of clearing entire slot
+        String[] existingEntries = objective.getScoreboard().getEntries().toArray(new String[0]);
+        for(String entry : existingEntries) {
+            if(entry.contains("§6") || entry.contains("§7")) {
+                objective.getScoreboard().resetScores(entry);
+            }
+        }
         
+        // Then add new scores
         for (int i = 0; i < 5; i++) {
             String display = "§7      --";
             if (i < topPlayers.size()) {

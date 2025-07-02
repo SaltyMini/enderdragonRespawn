@@ -79,13 +79,21 @@ public class DragonEvents implements Listener {
         dragonDamageTrack.playerDamageDragonAdd(player.getName(), damage);
 
         updateDragonPhase(dragon);
+        DragonMob.updateScoreboard();
+        DragonMob.updateBossBar();
 
     }
 
     private void updateDragonPhase(EnderDragon dragon) {
         if(dragon.getHealth() == 0) return; // No need to update phase if dragon is dead
         if(dragon.getAttribute(Attribute.MAX_HEALTH) == null) return;
+
+
         double healthPercentage = (dragon.getHealth() / (Objects.requireNonNull(dragon.getAttribute(Attribute.MAX_HEALTH)).getBaseValue())) * 100;
+
+        double maxHealthValue = Objects.requireNonNull(dragon.getAttribute(Attribute.MAX_HEALTH)).getValue();
+        if(maxHealthValue <= 0) return; // Prevent division by zero
+
         int currentPhase = dragonAbilities.getDragonPhase();
 
         if (healthPercentage <= 66 && healthPercentage > 33 && currentPhase == 1) {
@@ -157,27 +165,6 @@ public class DragonEvents implements Listener {
         StopDragonMobRunnable();
     }
 
-    /* might want to use later
-    @EventHandler
-    public void onDragonProjectile(ProjectileLaunchEvent event) {
-        if (!(event.getEntity().getShooter() instanceof EnderDragon)) return;
-
-        EnderDragon dragon = (EnderDragon) event.getEntity().getShooter();
-        if (!DragonAbilities.isEventDragon(dragon)) return;
-
-        Bukkit.getLogger().info("Event Dragon launched a fireball!");
-
-        // Example: Make fireballs faster
-        event.getEntity().setVelocity(event.getEntity().getVelocity().multiply(2.0));
-
-        // Example: Spawn multiple fireballs
-        for (int i = 0; i < 2; i++) {
-            dragon.getWorld().spawn(dragon.getLocation(),
-                    event.getEntity().getClass());
-        }
-    }
-     */
-
     private String getPositionText(int position) {
         return switch (position) {
             case 0 -> "Top Damage Dealer";
@@ -192,9 +179,11 @@ public class DragonEvents implements Listener {
     public void onBreathDmg(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
         if (DragonMob.getEventDragon() == null) return;
-        if (event.getEntity() instanceof Player) {
+
+        if (event.getCause() == EntityDamageEvent.DamageCause.MAGIC) {
             event.setDamage(event.getDamage() * 2);
         }
+
     }
 
     @EventHandler
