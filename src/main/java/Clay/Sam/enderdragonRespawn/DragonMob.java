@@ -18,6 +18,8 @@ import org.bukkit.attribute.AttributeInstance;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.HashSet;
 
 public class DragonMob implements Listener {
 
@@ -176,44 +178,52 @@ public class DragonMob implements Listener {
     //
 
     public static void createScoreboard() {
-        if(scoreboard != null && objective != null) { return; }
+        // Remove existing scoreboard first
+        if(scoreboard != null) {
+            removeScoreboard();
+        }
 
         scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         objective = scoreboard.registerNewObjective("eventDragon", "dummy", "§c§lEvent Dragon");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
+        // Set header
         objective.getScore("§c§l   Top Damage     ").setScore(6);
-        objective.getScore("§6      --").setScore(5);
-        objective.getScore("§6      --").setScore(4);
-        objective.getScore("§6      --").setScore(3);
-        objective.getScore("§7      --").setScore(2);
-        objective.getScore("§7      --").setScore(1);
+        
+        // Set unique empty placeholders
+        objective.getScore("§7      -- ").setScore(5);
+        objective.getScore("§7      --  ").setScore(4);  
+        objective.getScore("§7      --   ").setScore(3);
+        objective.getScore("§7      --    ").setScore(2);
+        objective.getScore("§7      --     ").setScore(1);
 
+        // Apply to all online players
         for(Player player : Bukkit.getOnlinePlayers()) {
             player.setScoreboard(scoreboard);
         }
     }
 
-    // BUG: clearSlot then immediately set scores can cause conflicts
     public static void updateScoreboard() {
-        if (objective == null) return;
+        if (objective == null || scoreboard == null) return;
         
         List<Map.Entry<String, Float>> topPlayers = DragonDamageTrack.getInstance().getTopPlayers(5);
         
-        // FIX: Remove individual scores instead of clearing entire slot
-        String[] existingEntries = objective.getScoreboard().getEntries().toArray(new String[0]);
-        for(String entry : existingEntries) {
-            if(entry.contains("§6") || entry.contains("§7")) {
-                objective.getScoreboard().resetScores(entry);
-            }
+        // Clear all existing entries except the header - SAFE way to avoid ConcurrentModificationException
+        Set<String> entriesToRemove = new HashSet<>(scoreboard.getEntries());
+        entriesToRemove.remove("§c§l   Top Damage     ");
+        for(String entry : entriesToRemove) {
+            scoreboard.resetScores(entry);
         }
         
-        // Then add new scores
+        // Add scores for actual players and fill remaining slots with placeholders
         for (int i = 0; i < 5; i++) {
-            String display = "§7      --";
+            String display;
             if (i < topPlayers.size()) {
                 Map.Entry<String, Float> player = topPlayers.get(i);
-                display = "§6" + player.getKey() + ": " + String.format("%.1f", player.getValue());
+                display = "§6" + (i + 1) + ". " + player.getKey() + ": " + String.format("%.1f", player.getValue());
+            } else {
+                // Fill remaining slots with unique empty entries
+                display = "§7      --" + " ".repeat(i + 1);
             }
             objective.getScore(display).setScore(5 - i);
         }
@@ -232,6 +242,12 @@ public class DragonMob implements Listener {
     public static void removeScoreboardPlayer(Player player) {
         if (scoreboard != null) {
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        }
+    }
+
+    public static void applyScoreboardPlayer(Player player) {
+        if(scoreboard != null) {
+            player.setScoreboard(scoreboard);
         }
     }
 

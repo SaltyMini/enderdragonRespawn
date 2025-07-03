@@ -245,7 +245,6 @@ public class DragonEvents implements Listener {
             }
         }
 
-
         if(!world.getPlayers().isEmpty()) {
             if(dragonRunnableTask == null) {
                 StartDragonMobRunnable();

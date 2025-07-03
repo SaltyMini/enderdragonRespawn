@@ -153,7 +153,6 @@ public class DragonAbilities {
     }
 
     public void respawnHealBeaconsAbility() {
-
         dragonCharge();
 
         if(beaconLocations.isEmpty()) {

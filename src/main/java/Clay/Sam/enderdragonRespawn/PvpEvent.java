@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.plugin.Plugin;
 
@@ -50,5 +52,16 @@ public class PvpEvent implements Listener {
                 player.sendMessage("§cYou cannot fly on the main end island");
             }
         }
+    }
+
+    //Apply scoreboard to playres on join
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        DragonMob.applyScoreboardPlayer(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onLeave(PlayerQuitEvent event) {
+        DragonMob.removeScoreboardPlayer(event.getPlayer());
     }
 }
