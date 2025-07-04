@@ -1,6 +1,7 @@
 package Clay.Sam.enderdragonRespawn;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -43,6 +44,8 @@ public class PvpEvent implements Listener {
     @EventHandler
     public void cancelFly(PlayerToggleFlightEvent event) {
         Player player = event.getPlayer();
+        player.getGameMode();
+        if(player.getGameMode() != GameMode.SURVIVAL) return;
         if (player.getWorld() == EnderdragonRespawn.getWorld()) {
             Location playerLoc = player.getLocation();
             if (Math.abs(playerLoc.getX()) < 100 && Math.abs(playerLoc.getZ()) < 100) {

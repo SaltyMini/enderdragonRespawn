@@ -160,7 +160,7 @@ public class DragonAbilities {
         }
 
         for (Location loc : beaconLocations) {
-            loc.getWorld().getBlockAt(loc).setType(org.bukkit.Material.BEACON);
+            loc.getWorld().getBlockAt(loc).setType(Material.END_CRYSTAL);
             loc.getWorld().getBlockAt(loc.clone().subtract(0, 1, 0)).setType(Material.BEDROCK);
             plugin.getLogger().info("Placed beacon at " + loc);
         }

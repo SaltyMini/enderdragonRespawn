@@ -31,6 +31,7 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
         Objects.requireNonNull(this.getCommand("spawnEventDragon")).setExecutor(this);
         Objects.requireNonNull(this.getCommand("killEventDragon")).setExecutor(this);
         Objects.requireNonNull(this.getCommand("hideEventBar")).setExecutor(this);
+        Objects.requireNonNull(this.getCommand("showEventBar")).setExecutor(this);
 
         DragonMob.getInstance();
         DragonAbilities.getInstance();
@@ -100,6 +101,14 @@ public final class EnderdragonRespawn extends JavaPlugin implements CommandExecu
             if(commandSender instanceof Player player) {
                 DragonMob.removeBossBarPlayer(player);
                 DragonMob.removeScoreboardPlayer(player);
+                return true;
+            }
+
+        } else if (command.getLabel().equalsIgnoreCase("showEventBar")) {
+
+            if(commandSender instanceof Player player) {
+                DragonMob.applyScoreboardPlayer(player);
+                DragonMob.showBossBarPlayer(player);
                 return true;
             }
 

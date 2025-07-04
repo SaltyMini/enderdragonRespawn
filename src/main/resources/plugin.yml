@@ -19,6 +19,9 @@ commands:
   hideEventBar:
     description: Hides the event dragon health bar
     usage: /hideEventBar
+  showEventBar:
+    description: Shows the event dragon health bar
+    usage: /showEventBar
 
 
 permissions:

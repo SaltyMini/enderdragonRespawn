@@ -173,6 +173,12 @@ public class DragonMob implements Listener {
         }
     }
 
+    public static void showBossBarPlayer(Player player) {
+        if(eventDragonBossBar != null) {
+            eventDragonBossBar.addPlayer(player);
+        }
+    }
+
     //
      // Scoreboard Methods
     //
@@ -214,9 +220,16 @@ public class DragonMob implements Listener {
         for(String entry : entriesToRemove) {
             scoreboard.resetScores(entry);
         }
+
         
         // Add scores for actual players and fill remaining slots with placeholders
         for (int i = 0; i < 5; i++) {
+            if(topPlayers.get(i) != null) {
+                plugin.getLogger().info("Updating scoreboard for player " + i + " - " + topPlayers.get(i).getKey());
+            } else {
+                plugin.getLogger().info("size: " + topPlayers.size());
+            }
+
             String display;
             if (i < topPlayers.size()) {
                 Map.Entry<String, Float> player = topPlayers.get(i);

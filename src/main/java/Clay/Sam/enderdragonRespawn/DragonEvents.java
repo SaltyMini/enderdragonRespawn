@@ -8,6 +8,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -68,7 +69,7 @@ public class DragonEvents implements Listener {
     }
 
     //Player damages dragon
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerDamageDragon(EntityDamageByEntityEvent event) {
         if(!(event.getEntity() instanceof EnderDragon dragon)) return;
         if(!(DragonMob.isEventDragon(dragon))) return;
@@ -76,10 +77,10 @@ public class DragonEvents implements Listener {
 
         float damage = (float) event.getDamage();
 
+        plugin.getLogger().info("Player " + player.getName() + " damaged the Event Dragon for " + damage + " damage.");
         dragonDamageTrack.playerDamageDragonAdd(player.getName(), damage);
 
         updateDragonPhase(dragon);
-        DragonMob.updateScoreboard();
         DragonMob.updateBossBar();
 
     }
@@ -194,19 +195,11 @@ public class DragonEvents implements Listener {
         EnderDragon.Phase newPhase = event.getNewPhase();
         EnderDragon.Phase currentPhase = event.getCurrentPhase();
 
-        // Check for perching phases
-        if (newPhase == EnderDragon.Phase.LAND_ON_PORTAL) {
-            // Dragon is about to perch or is perching
-            plugin.getLogger().info("Event Dragon is perching!");
-            event.setCancelled(true);
-            dragon.setPhase(EnderDragon.Phase.SEARCH_FOR_BREATH_ATTACK_TARGET);
-        }
-
         if (newPhase == EnderDragon.Phase.FLY_TO_PORTAL) {
             // Dragon is about to perch or is perching
             plugin.getLogger().info("Event Dragon is perching!");
             event.setCancelled(true);
-            dragon.setPhase(EnderDragon.Phase.CHARGE_PLAYER);
+            dragonAbilities.dragonCharge();
         }
 
         plugin.getLogger().info("Event Dragon phase changed from " +
